@@ -1,0 +1,391 @@
+import { chatbotResponses } from '../data/chatbotResponses';
+import { museums } from '../data/mockMuseumInfo';
+
+const STATES = {
+    INIT: 'INIT',
+    LANGUAGE_SELECT: 'LANGUAGE_SELECT',
+    MUSEUM_SELECT: 'MUSEUM_SELECT',
+    MAIN_MENU: 'MAIN_MENU',
+    BOOKING_DATE: 'BOOKING_DATE',
+    BOOKING_SLOT: 'BOOKING_SLOT',
+    BOOKING_CATEGORY: 'BOOKING_CATEGORY',
+    BOOKING_QUANTITY: 'BOOKING_QUANTITY',
+    BOOKING_CONFIRM: 'BOOKING_CONFIRM',
+    INFO_MENU: 'INFO_MENU',
+    FAQ_MENU: 'FAQ_MENU',
+};
+
+const TIME_SLOTS = [
+    '10:00 AM - 11:30 AM',
+    '11:30 AM - 1:00 PM',
+    '1:00 PM - 2:30 PM',
+    '2:30 PM - 4:00 PM',
+    '4:00 PM - 5:30 PM',
+    '5:30 PM - 7:00 PM',
+];
+
+const CATEGORIES = [
+    { name: 'Adult', price: 300 },
+    { name: 'Child', price: 100 },
+    { name: 'Senior Citizen', price: 150 },
+    { name: 'Student', price: 150 },
+    { name: 'Foreign National', price: 650 },
+];
+
+export function createChatbotEngine() {
+    let state = STATES.INIT;
+    let language = 'en';
+    let bookingData = {};
+    let selectedMuseum = null;
+
+    function getSelectedMuseum() {
+        return selectedMuseum || museums[0];
+    }
+
+    function getResponses() {
+        return chatbotResponses[language] || chatbotResponses.en;
+    }
+
+    function getQuickReplies() {
+        const r = getResponses();
+        switch (state) {
+            case STATES.INIT:
+            case STATES.LANGUAGE_SELECT:
+                return [
+                    { text: 'English', value: 'lang_en' },
+                    { text: 'हिंदी', value: 'lang_hi' },
+                    { text: 'বাংলা', value: 'lang_bn' },
+                    { text: 'தமிழ்', value: 'lang_ta' },
+                    { text: 'తెలుగు', value: 'lang_te' },
+                    { text: 'मराठी', value: 'lang_mr' },
+                    { text: 'ગુજરાતી', value: 'lang_gu' },
+                    { text: 'ಕನ್ನಡ', value: 'lang_kn' },
+                    { text: 'മലയാളം', value: 'lang_ml' },
+                    { text: 'ਪੰਜਾਬੀ', value: 'lang_pa' },
+                    { text: 'ଓଡ଼ିଆ', value: 'lang_or' },
+                    { text: 'অসমীয়া', value: 'lang_as' },
+                    { text: 'اردو', value: 'lang_ur' },
+                ];
+            case STATES.MUSEUM_SELECT:
+                return museums.map((m, i) => ({
+                    text: `${m.emoji} ${m.shortName}`,
+                    value: `museum_${i}`,
+                }));
+            case STATES.MAIN_MENU:
+                return [
+                    { text: '🎫 Book Tickets', value: 'book' },
+                    { text: 'ℹ️ Museum Info', value: 'info' },
+                    { text: '❓ FAQs', value: 'faq' },
+                    { text: '📞 Contact', value: 'contact' },
+                ];
+            case STATES.BOOKING_SLOT:
+                return getSelectedMuseum().timeSlots.map((slot, i) => ({
+                    text: `${i + 1}️⃣ ${slot.time}`,
+                    value: `slot_${i + 1}`,
+                }));
+            case STATES.BOOKING_CATEGORY:
+                return getSelectedMuseum().ticketCategories.map((cat, i) => ({
+                    text: `${i + 1}️⃣ ${cat.name} - ₹${cat.price}`,
+                    value: `cat_${i + 1}`,
+                }));
+            case STATES.BOOKING_QUANTITY:
+                return [1, 2, 3, 4, 5].map(n => ({
+                    text: `${n}`,
+                    value: `qty_${n}`,
+                }));
+            case STATES.BOOKING_CONFIRM:
+                return [
+                    { text: '✅ Yes, Proceed', value: 'confirm_yes' },
+                    { text: '❌ Cancel', value: 'confirm_no' },
+                ];
+            case STATES.INFO_MENU:
+                return [
+                    { text: '🏛️ History', value: 'info_history' },
+                    { text: '🕐 Hours', value: 'info_hours' },
+                    { text: '📋 Rules', value: 'info_rules' },
+                    { text: '📍 Location', value: 'info_location' },
+                    { text: '🔙 Back', value: 'back' },
+                ];
+            case STATES.FAQ_MENU:
+                return [
+                    { text: '❌ Cancel Booking?', value: 'faq_cancel' },
+                    { text: '🅿️ Parking?', value: 'faq_parking' },
+                    { text: '♿ Wheelchair?', value: 'faq_wheelchair' },
+                    { text: '☕ Cafe?', value: 'faq_cafe' },
+                    { text: '🗣️ Guided Tour?', value: 'faq_guide' },
+                    { text: '🔙 Back', value: 'back' },
+                ];
+            default:
+                return [{ text: '🔙 Main Menu', value: 'back' }];
+        }
+    }
+
+    function processMessage(input) {
+        const r = getResponses();
+        const text = input.toLowerCase().trim();
+        const results = [];
+
+        // Handle back/menu at any point
+        if (text === 'back' || text === 'menu' || text === 'main menu') {
+            state = STATES.MAIN_MENU;
+            return [{ text: r.mainMenu, quickReplies: getQuickReplies() }];
+        }
+
+        switch (state) {
+            case STATES.INIT:
+                state = STATES.LANGUAGE_SELECT;
+                return [{
+                    text: "🇮🇳 Welcome to MuseumPass Bangalore! Please select your language / कृपया अपनी भाषा चुनें / ದಯವಿಟ್ಟು ನಿಮ್ಮ ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ:",
+                    quickReplies: getQuickReplies(),
+                }];
+
+            case STATES.LANGUAGE_SELECT: {
+                const langMap = {
+                    lang_en: 'en', lang_hi: 'hi', lang_bn: 'bn', lang_ta: 'ta',
+                    lang_te: 'te', lang_mr: 'mr', lang_gu: 'gu', lang_kn: 'kn',
+                    lang_ml: 'ml', lang_pa: 'pa', lang_or: 'or', lang_as: 'as',
+                    lang_ur: 'ur',
+                };
+                if (langMap[text]) {
+                    language = langMap[text];
+                } else if (text.includes('english') || text.includes('en')) {
+                    language = 'en';
+                } else if (text.includes('hindi') || text.includes('हिंदी')) {
+                    language = 'hi';
+                } else if (text.includes('bengali') || text.includes('bangla') || text.includes('বাংলা')) {
+                    language = 'bn';
+                } else if (text.includes('tamil') || text.includes('தமிழ்')) {
+                    language = 'ta';
+                } else if (text.includes('telugu') || text.includes('తెలుగు')) {
+                    language = 'te';
+                } else if (text.includes('marathi') || text.includes('मराठी')) {
+                    language = 'mr';
+                } else if (text.includes('gujarati') || text.includes('ગુજરાતી')) {
+                    language = 'gu';
+                } else if (text.includes('kannada') || text.includes('ಕನ್ನಡ')) {
+                    language = 'kn';
+                } else if (text.includes('malayalam') || text.includes('മലയാളം')) {
+                    language = 'ml';
+                } else if (text.includes('punjabi') || text.includes('ਪੰਜਾਬੀ')) {
+                    language = 'pa';
+                } else if (text.includes('odia') || text.includes('ଓଡ଼ିଆ')) {
+                    language = 'or';
+                } else if (text.includes('assamese') || text.includes('অসমীয়া')) {
+                    language = 'as';
+                } else if (text.includes('urdu') || text.includes('اردو')) {
+                    language = 'ur';
+                } else {
+                    language = 'en';
+                }
+                state = STATES.MUSEUM_SELECT;
+                const rr = getResponses();
+                return [
+                    { text: rr.languageSelected },
+                    { text: rr.greeting },
+                    { text: "🏛️ Please select a museum:", quickReplies: getQuickReplies() },
+                ];
+            }
+
+            case STATES.MUSEUM_SELECT: {
+                let museumIdx = -1;
+                if (text.startsWith('museum_')) {
+                    museumIdx = parseInt(text.split('_')[1]);
+                } else {
+                    museumIdx = museums.findIndex(m =>
+                        text.includes(m.shortName.toLowerCase()) || text.includes(m.name.toLowerCase())
+                    );
+                }
+                if (museumIdx >= 0 && museumIdx < museums.length) {
+                    selectedMuseum = museums[museumIdx];
+                } else {
+                    selectedMuseum = museums[0];
+                }
+                const r2 = getResponses();
+                state = STATES.MAIN_MENU;
+                return [
+                    { text: `✅ ${selectedMuseum.emoji} ${selectedMuseum.shortName} selected!` },
+                    { text: r2.mainMenu, quickReplies: getQuickReplies() },
+                ];
+            }
+
+            case STATES.MAIN_MENU:
+                if (text.includes('book') || text === 'book' || text === '1' || text === 'ticket') {
+                    state = STATES.BOOKING_DATE;
+                    bookingData = {};
+                    return [{ text: r.booking.selectDate }];
+                } else if (text.includes('info') || text === 'info' || text === '2' || text === 'museum') {
+                    state = STATES.INFO_MENU;
+                    return [{ text: r.info.menu, quickReplies: getQuickReplies() }];
+                } else if (text.includes('faq') || text === 'faq' || text === '3' || text === 'question') {
+                    state = STATES.FAQ_MENU;
+                    return [{ text: r.faq.menu, quickReplies: getQuickReplies() }];
+                } else if (text.includes('contact') || text === '4') {
+                    return [
+                        { text: r.info.location },
+                        { text: r.mainMenu, quickReplies: getQuickReplies() },
+                    ];
+                } else if (text.includes('thank') || text.includes('bye')) {
+                    state = STATES.INIT;
+                    return [{ text: r.thanks }];
+                }
+                return [{ text: r.fallback, quickReplies: getQuickReplies() }];
+
+            case STATES.BOOKING_DATE: {
+                const dateRegex = /\d{4}-\d{2}-\d{2}/;
+                const match = text.match(dateRegex);
+                if (match) {
+                    bookingData.date = match[0];
+                    state = STATES.BOOKING_SLOT;
+                    return [
+                        { text: r.booking.dateConfirmed(bookingData.date) },
+                        { text: r.booking.selectTimeSlot, quickReplies: getQuickReplies() },
+                    ];
+                }
+                return [{ text: r.booking.selectDate }];
+            }
+
+            case STATES.BOOKING_SLOT: {
+                const curMuseum = getSelectedMuseum();
+                let slotIndex = -1;
+                if (text.startsWith('slot_')) {
+                    slotIndex = parseInt(text.split('_')[1]) - 1;
+                } else {
+                    const num = parseInt(text);
+                    if (num >= 1 && num <= curMuseum.timeSlots.length) slotIndex = num - 1;
+                }
+                if (slotIndex >= 0 && slotIndex < curMuseum.timeSlots.length) {
+                    bookingData.timeSlot = curMuseum.timeSlots[slotIndex].time;
+                    state = STATES.BOOKING_CATEGORY;
+                    return [
+                        { text: r.booking.slotConfirmed(bookingData.timeSlot) },
+                        { text: r.booking.selectCategory, quickReplies: getQuickReplies() },
+                    ];
+                }
+                return [{ text: r.booking.selectTimeSlot, quickReplies: getQuickReplies() }];
+            }
+
+            case STATES.BOOKING_CATEGORY: {
+                const curMuseum2 = getSelectedMuseum();
+                let catIndex = -1;
+                if (text.startsWith('cat_')) {
+                    catIndex = parseInt(text.split('_')[1]) - 1;
+                } else {
+                    const num = parseInt(text);
+                    if (num >= 1 && num <= curMuseum2.ticketCategories.length) catIndex = num - 1;
+                }
+                if (catIndex >= 0 && catIndex < curMuseum2.ticketCategories.length) {
+                    bookingData.category = curMuseum2.ticketCategories[catIndex].name;
+                    bookingData.price = curMuseum2.ticketCategories[catIndex].price;
+                    state = STATES.BOOKING_QUANTITY;
+                    return [
+                        { text: r.booking.categoryConfirmed(bookingData.category) },
+                        { text: r.booking.selectQuantity, quickReplies: getQuickReplies() },
+                    ];
+                }
+                return [{ text: r.booking.selectCategory, quickReplies: getQuickReplies() }];
+            }
+
+            case STATES.BOOKING_QUANTITY: {
+                let qty = 0;
+                if (text.startsWith('qty_')) {
+                    qty = parseInt(text.split('_')[1]);
+                } else {
+                    qty = parseInt(text);
+                }
+                if (qty >= 1 && qty <= 10) {
+                    bookingData.quantity = qty;
+                    bookingData.total = qty * bookingData.price;
+                    state = STATES.BOOKING_CONFIRM;
+                    return [{
+                        text: r.booking.summary(bookingData),
+                        quickReplies: getQuickReplies(),
+                    }];
+                }
+                return [{ text: r.booking.selectQuantity, quickReplies: getQuickReplies() }];
+            }
+
+            case STATES.BOOKING_CONFIRM:
+                if (text.includes('yes') || text === 'confirm_yes' || text === '1') {
+                    state = STATES.MAIN_MENU;
+                    return [
+                        { text: r.booking.paymentRedirect, action: 'REDIRECT_PAYMENT', bookingData: { ...bookingData } },
+                    ];
+                } else {
+                    state = STATES.MAIN_MENU;
+                    return [
+                        { text: r.booking.cancelled },
+                        { text: r.mainMenu, quickReplies: getQuickReplies() },
+                    ];
+                }
+
+            case STATES.INFO_MENU: {
+                const infoMuseum = getSelectedMuseum();
+                if (text.includes('history') || text === '1' || text === 'info_history') {
+                    return [{ text: `🏛️ ${infoMuseum.history}`, quickReplies: getQuickReplies() }];
+                } else if (text.includes('hour') || text === '3' || text === 'info_hours') {
+                    return [{ text: `🕐 Hours:\n${infoMuseum.visitingHours.regular}\nWeekends: ${infoMuseum.visitingHours.weekend}\nClosed: ${infoMuseum.visitingHours.closed}`, quickReplies: getQuickReplies() }];
+                } else if (text.includes('rule') || text === '4' || text === 'info_rules') {
+                    return [{ text: `📋 Rules:\n${infoMuseum.rules.map(r => '• ' + r).join('\n')}`, quickReplies: getQuickReplies() }];
+                } else if (text.includes('location') || text.includes('contact') || text === '6' || text === 'info_location') {
+                    return [{ text: `📍 ${infoMuseum.contact.address}\n📞 ${infoMuseum.contact.phone}${infoMuseum.contact.email ? '\n📧 ' + infoMuseum.contact.email : ''}`, quickReplies: getQuickReplies() }];
+                } else if (text.includes('gallery') || text.includes('exhibit') || text === '2') {
+                    const galleryText = infoMuseum.galleries
+                        .map(g => `${g.image} **${g.name}**\n${g.description}${g.items > 0 ? '\nExhibits: ' + g.items : ''}`)
+                        .join('\n\n');
+                    return [{ text: galleryText, quickReplies: getQuickReplies() }];
+                } else if (text.includes('event') || text === '5') {
+                    const eventText = infoMuseum.events
+                        .map(e => `🎪 **${e.title}**\n📅 ${e.date} | ⏰ ${e.time}\n${e.description}\n💰 ${e.price}`)
+                        .join('\n\n');
+                    return [{ text: eventText, quickReplies: getQuickReplies() }];
+                }
+                state = STATES.MAIN_MENU;
+                return [{ text: r.mainMenu, quickReplies: getQuickReplies() }];
+            }
+
+            case STATES.FAQ_MENU:
+                if (text.includes('cancel') || text === '1' || text === 'faq_cancel') {
+                    return [{ text: r.faq.cancel, quickReplies: getQuickReplies() }];
+                } else if (text.includes('parking') || text === '2' || text === 'faq_parking') {
+                    return [{ text: r.faq.parking, quickReplies: getQuickReplies() }];
+                } else if (text.includes('wheelchair') || text === '3' || text === 'faq_wheelchair') {
+                    return [{ text: r.faq.wheelchair, quickReplies: getQuickReplies() }];
+                } else if (text.includes('cafe') || text === '4' || text === 'faq_cafe') {
+                    return [{ text: r.faq.cafe, quickReplies: getQuickReplies() }];
+                } else if (text.includes('guide') || text.includes('tour') || text === '5' || text === 'faq_guide') {
+                    return [{ text: r.faq.guidedTour, quickReplies: getQuickReplies() }];
+                }
+                state = STATES.MAIN_MENU;
+                return [{ text: r.mainMenu, quickReplies: getQuickReplies() }];
+
+            default:
+                state = STATES.MAIN_MENU;
+                return [{ text: r.fallback, quickReplies: getQuickReplies() }];
+        }
+    }
+
+    function getInitialMessages() {
+        state = STATES.LANGUAGE_SELECT;
+        return [{
+            text: "🇮🇳 Welcome to Indian Museums! / भारतीय संग्रहालयों में आपका स्वागत है!\n\nPlease select your language / कृपया अपनी भाषा चुनें:",
+            quickReplies: getQuickReplies(),
+            isBot: true,
+        }];
+    }
+
+    function getBookingData() {
+        return { ...bookingData };
+    }
+
+    function getCurrentLanguage() {
+        return language;
+    }
+
+    return {
+        processMessage,
+        getInitialMessages,
+        getQuickReplies,
+        getBookingData,
+        getCurrentLanguage,
+    };
+}
