@@ -126,20 +126,10 @@ responses:
       buttons:
         - title: "🔬 Visvesvaraya Museum"
           payload: '/select_museum{"museum_name": "visvesvaraya"}'
-        - title: "🏛️ Government Museum"
-          payload: '/select_museum{"museum_name": "govt-museum"}'
         - title: "✈️ HAL Aerospace Museum"
           payload: '/select_museum{"museum_name": "hal-aerospace"}'
-        - title: "🖼️ NGMA Bangalore"
-          payload: '/select_museum{"museum_name": "ngma"}'
-        - title: "🏰 Bangalore Palace"
-          payload: '/select_museum{"museum_name": "bangalore-palace"}'
-        - title: "🐅 Tipu Sultan's Palace"
-          payload: '/select_museum{"museum_name": "tipu-palace"}'
-        - title: "🌌 Nehru Planetarium"
-          payload: '/select_museum{"museum_name": "nehru-planetarium"}'
-        - title: "🎵 Indian Music Experience"
-          payload: '/select_museum{"museum_name": "ime"}'
+        - title: "🧪 Science Gallery Bengaluru"
+          payload: '/select_museum{"museum_name": "science-gallery"}'
 
   utter_main_menu:
     - text: "What would you like to do?"

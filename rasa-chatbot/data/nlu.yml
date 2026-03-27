@@ -81,21 +81,12 @@ nlu:
   - intent: select_museum
     examples: |
       - [visvesvaraya](museum_name)
-      - [govt-museum](museum_name)
       - [hal-aerospace](museum_name)
-      - [ngma](museum_name)
-      - [bangalore-palace](museum_name)
-      - [tipu-palace](museum_name)
-      - [nehru-planetarium](museum_name)
-      - [ime](museum_name)
+      - [science-gallery](museum_name)
       - I want to visit [Visvesvaraya](museum_name) museum
       - take me to [HAL Aerospace](museum_name)
-      - [Government Museum](museum_name) please
-      - I'd like to go to [Bangalore Palace](museum_name)
-      - show me [NGMA](museum_name)
-      - [Tipu Sultan's Palace](museum_name)
-      - book for [Nehru Planetarium](museum_name)
-      - [Indian Music Experience](museum_name)
+      - show me [Science Gallery](museum_name)
+      - let's go to [Science Gallery Bengaluru](museum_name)
 
   - intent: book_tickets
     examples: |

@@ -25,13 +25,8 @@ A modern, AI-powered web application for browsing and booking tickets to museums
 | Museum | Type | Highlights |
 |---|---|---|
 | 🔬 Visvesvaraya Industrial & Technological Museum | Science | Interactive exhibits, 3D shows, robotics workshops |
-| 🏛️ Government Museum (Cubbon Park) | Heritage | Ancient coins, sculptures, Mysore paintings |
 | ✈️ HAL Aerospace Museum | Aviation | Real aircraft, flight simulators, engine gallery |
-| 🖼️ National Gallery of Modern Art | Art | Amrita Sher-Gil, Tagore, M.F. Husain works |
-| 🏰 Bangalore Palace | Palace | Tudor-style architecture, royal chambers |
-| 🐅 Tipu Sultan's Summer Palace | History | Teak wood palace, murals, artifacts |
-| 🌌 Jawaharlal Nehru Planetarium | Space | Sky theatre, telescope nights, science park |
-| 🎵 Indian Music Experience Museum | Music | Interactive instruments, folk & Bollywood music |
+| 🧪 Science Gallery Bengaluru | Science/Art | Thematic trans-disciplinary exhibitions, public labs |
 
 ## 🛠️ Tech Stack
 

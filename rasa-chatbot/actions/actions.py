@@ -79,28 +79,6 @@ MUSEUMS = {
         ],
         "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
     },
-    "govt-museum": {
-        "id": "govt-museum",
-        "name": "Government Museum Bangalore",
-        "shortName": "Government Museum",
-        "location": "Kasturba Road, Bangalore - 560001",
-        "phone": "+91-80-2286-4483",
-        "email": "info@govtmuseumblr.gov.in",
-        "history": "One of the oldest museums in India, established in 1865 by the British. It spans 18 galleries and houses over 12,000 artifacts including geological specimens, art, and archaeological finds from the Indus Valley Civilization.",
-        "hours": "Tuesday to Sunday: 10:00 AM - 5:00 PM\nClosed: Monday & Public Holidays\nLast Entry: 4:30 PM",
-        "rules": "Photography with prior permission only\nNo touching artifacts\nSilence in galleries\nChildren under 10 must be accompanied",
-        "galleries": [
-            {"name": "Archaeology Gallery", "desc": "Artifacts from Mohenjodaro and Harappa"},
-            {"name": "Art Gallery", "desc": "Paintings from Mysore, Tanjore, and Deccan"},
-            {"name": "Geology Gallery", "desc": "Rare minerals and geological specimens"},
-            {"name": "Numismatics Gallery", "desc": "Ancient coins from various Indian kingdoms"}
-        ],
-        "events": [
-            {"name": "Heritage Walk", "date": "Every Sunday", "desc": "Guided heritage walk through museum grounds"},
-            {"name": "Coin Exhibition", "date": "Apr 2026", "desc": "Special exhibition of rare Indian coins"}
-        ],
-        "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
-    },
     "hal-aerospace": {
         "id": "hal-aerospace",
         "name": "HAL Heritage Centre & Aerospace Museum",
@@ -123,114 +101,25 @@ MUSEUMS = {
         ],
         "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
     },
-    "ngma": {
-        "id": "ngma",
-        "name": "National Gallery of Modern Art, Bangalore",
-        "shortName": "NGMA Bangalore",
-        "location": "49, Palace Road, Bangalore - 560052",
-        "phone": "+91-80-2234-2338",
-        "email": "ngma.bangalore@gov.in",
-        "history": "The Bangalore branch of NGMA was established in 2009 in the heritage Manikyavelu Mansion. It hosts over 500 works of modern and contemporary Indian art spanning painting, sculpture, and graphic art.",
-        "hours": "Tuesday to Sunday: 10:00 AM - 5:00 PM\nFriday: 10:00 AM - 8:00 PM (Extended)\nClosed: Monday & National Holidays\nLast Entry: 30 min before closing",
-        "rules": "No photography inside galleries\nNo food or beverages\nMaintain silence\nDo not touch artworks",
+    "science-gallery": {
+        "id": "science-gallery",
+        "name": "Science Gallery Bengaluru",
+        "shortName": "Science Gallery",
+        "location": "Sanjaynagar, Bangalore - 560024",
+        "phone": "+91-80-0000-0000",
+        "email": "info@sciencegallery.com",
+        "history": "Envisioned as Asia's first Science Gallery, it officially opened to the public in January 2024. It is part of the Global Science Gallery Network and aims to engage young adults and foster critical appreciation for science through open-ended experiments.",
+        "hours": "Wednesday, Thursday: 10:00 AM - 6:00 PM\nFriday to Sunday: 10:00 AM - 8:00 PM\nClosed: Monday & Tuesday\nLast Entry: 1 hour before closing",
+        "rules": "Respect the experimental setups\nEngage and ask questions to Mediators\nPhotography rules vary by exhibition season\nMaintain general decorum",
         "galleries": [
-            {"name": "Permanent Collection", "desc": "Works by Raja Ravi Varma, Amrita Sher-Gil, and M.F. Husain"},
-            {"name": "Contemporary Gallery", "desc": "Rotating exhibitions of modern art"},
-            {"name": "Sculpture Garden", "desc": "Outdoor sculptures in the mansion gardens"},
-            {"name": "Photography Gallery", "desc": "Exhibitions of fine art photography"}
+            {"name": "Exhibition Galleries", "desc": "Ever-changing, thematic exhibitions"},
+            {"name": "Public Lab Complex", "desc": "Experimental spaces for intergenerational co-inquiry"}
         ],
         "events": [
-            {"name": "Art Workshop", "date": "Every Weekend", "desc": "Painting and sculpture workshops for visitors"},
-            {"name": "Film Screening", "date": "Monthly", "desc": "Art cinema and documentary screenings"}
+            {"name": "Trans-disciplinary Workshops", "date": "Varies", "desc": "Interactive sessions blending art and science"},
+            {"name": "Guided Tour by Experimentors", "date": "Daily", "desc": "Enriching insights discussed with trained young adults"}
         ],
-        "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
-    },
-    "bangalore-palace": {
-        "id": "bangalore-palace",
-        "name": "Bangalore Palace",
-        "shortName": "Bangalore Palace",
-        "location": "Vasanth Nagar, Bangalore - 560052",
-        "phone": "+91-80-2336-0818",
-        "email": "palacevisit@bangalorepalace.com",
-        "history": "Built in 1878 by King Chamaraja Wadiyar, Bangalore Palace is inspired by England's Windsor Castle. It spans 454 acres and features Tudor-style architecture, fortified towers, and lush green lawns.",
-        "hours": "All days: 10:00 AM - 5:30 PM\nLast Entry: 5:00 PM",
-        "rules": "Photography charges apply separately\nNo touching palace interiors\nFollow guided tour route only\nNo climbing on structures",
-        "galleries": [
-            {"name": "Durbar Hall", "desc": "Grand hall with ornate ceilings and royal portraits"},
-            {"name": "Tudor Towers", "desc": "Gothic towers with panoramic city views"},
-            {"name": "Palace Grounds", "desc": "Sprawling 454-acre grounds with gardens"},
-            {"name": "Royal Gallery", "desc": "Collection of Wadiyar dynasty memorabilia"}
-        ],
-        "events": [
-            {"name": "Palace Illumination Night", "date": "Every Friday", "desc": "Evening light show at the palace"},
-            {"name": "Heritage Festival", "date": "Jan 2026", "desc": "Cultural performances in palace grounds"}
-        ],
-        "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
-    },
-    "tipu-palace": {
-        "id": "tipu-palace",
-        "name": "Tipu Sultan's Summer Palace",
-        "shortName": "Tipu Sultan's Palace",
-        "location": "Albert Victor Road, Chamrajpet, Bangalore - 560018",
-        "phone": "+91-80-2672-1677",
-        "email": "asi.tipupalace@gov.in",
-        "history": "Built around 1791, this elegant palace was the summer residence of Tipu Sultan, the 'Tiger of Mysore'. The palace features Indo-Islamic architecture with teakwood pillars, arches, and balconies.",
-        "hours": "All days: 8:30 AM - 5:30 PM\nLast Entry: 5:00 PM",
-        "rules": "No flash photography\nNo touching wooden structures\nShoes must be removed at entrance\nMaintain silence inside the palace",
-        "galleries": [
-            {"name": "Main Hall", "desc": "Ornate teak pillars and arched corridors"},
-            {"name": "Tipu Sultan Exhibition", "desc": "Historical artifacts, weapons, and paintings"},
-            {"name": "Coin Gallery", "desc": "Coins from the Mysore Kingdom era"}
-        ],
-        "events": [
-            {"name": "Tipu Jayanti", "date": "Nov 2026", "desc": "Annual celebration of Tipu Sultan's birthday"},
-            {"name": "ASI Heritage Tour", "date": "Monthly", "desc": "Guided archaeological heritage tour"}
-        ],
-        "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
-    },
-    "nehru-planetarium": {
-        "id": "nehru-planetarium",
-        "name": "Jawaharlal Nehru Planetarium",
-        "shortName": "Nehru Planetarium",
-        "location": "Sri T. Chowdaiah Road, Bangalore - 560001",
-        "phone": "+91-80-2267-1543",
-        "email": "jnplanetarium@bangaloreast.gov.in",
-        "history": "Opened in 1989, the Nehru Planetarium is one of five planetariums in India set up by Jawaharlal Nehru Memorial Fund. It features a sky theatre, telescopes, and interactive space science exhibits.",
-        "hours": "Tuesday to Sunday: 10:00 AM - 5:30 PM\nShows: 11:00 AM, 1:00 PM, 3:00 PM, 5:00 PM\nClosed: Monday",
-        "rules": "No entry after show begins\nNo photography during sky shows\nSilence during shows\nChildren below 3 not allowed for sky shows",
-        "galleries": [
-            {"name": "Sky Theatre", "desc": "360-degree projection dome with daily shows"},
-            {"name": "Science Park", "desc": "Outdoor interactive science experiments"},
-            {"name": "Observatory", "desc": "Telescope viewing on clear nights"},
-            {"name": "Space Gallery", "desc": "Models of satellites, rockets, and solar system"}
-        ],
-        "events": [
-            {"name": "Star Gazing Night", "date": "Every Full Moon", "desc": "Telescopic observation of celestial bodies"},
-            {"name": "Space Week", "date": "Oct 2026", "desc": "Week-long space science activities"}
-        ],
-        "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
-    },
-    "ime": {
-        "id": "ime",
-        "name": "Indian Music Experience Museum",
-        "shortName": "Indian Music Experience",
-        "location": "JP Nagar, Bangalore - 560078",
-        "phone": "+91-80-2659-5599",
-        "email": "info@indianmusicexperience.org",
-        "history": "India's first interactive music museum, opened in 2019. It spans 45,000 sq ft across 3 floors with 16 galleries dedicated to India's diverse musical heritage from classical to Bollywood.",
-        "hours": "Wednesday to Monday: 10:00 AM - 6:00 PM\nClosed: Tuesday\nLast Entry: 5:00 PM",
-        "rules": "No outside instruments\nHeadphones available at listening stations\nNo food in gallery areas\nPhotography allowed without flash",
-        "galleries": [
-            {"name": "Sound Garden", "desc": "Outdoor musical instruments and sound sculptures"},
-            {"name": "Classical Music Gallery", "desc": "Carnatic and Hindustani music traditions"},
-            {"name": "Bollywood Gallery", "desc": "100 years of Hindi film music"},
-            {"name": "Recording Studio", "desc": "Try recording your own music"}
-        ],
-        "events": [
-            {"name": "Live Concert Series", "date": "Every Saturday", "desc": "Live performances by emerging artists"},
-            {"name": "Music Workshop", "date": "Weekly", "desc": "Learn instruments with expert musicians"}
-        ],
-        "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
+        "ticketPrices": {"General Admission": 0}
     }
 }
 
@@ -262,6 +151,11 @@ def get_museum(tracker):
 
 # Aliases for fuzzy museum name matching
 MUSEUM_ALIASES = {
+    # Science Gallery
+    "science-gallery": "science-gallery",
+    "science gallery": "science-gallery",
+    "science gallery bengaluru": "science-gallery",
+    "sgb": "science-gallery",
     # Visvesvaraya
     "visvesvaraya": "visvesvaraya",
     "visv": "visvesvaraya",
@@ -393,13 +287,8 @@ class ActionSetLanguage(Action):
             text=t(tracker, f"Language set to {lang_label}. Now please select a museum:"),
             buttons=[
                 {"title": "🔬 Visvesvaraya Museum", "payload": '/select_museum{"museum_name": "visvesvaraya"}'},
-                {"title": "🏛️ Government Museum", "payload": '/select_museum{"museum_name": "govt-museum"}'},
                 {"title": "✈️ HAL Aerospace Museum", "payload": '/select_museum{"museum_name": "hal-aerospace"}'},
-                {"title": "🖼️ NGMA Bangalore", "payload": '/select_museum{"museum_name": "ngma"}'},
-                {"title": "🏰 Bangalore Palace", "payload": '/select_museum{"museum_name": "bangalore-palace"}'},
-                {"title": "🐅 Tipu Sultan's Palace", "payload": '/select_museum{"museum_name": "tipu-palace"}'},
-                {"title": "🌌 Nehru Planetarium", "payload": '/select_museum{"museum_name": "nehru-planetarium"}'},
-                {"title": "🎵 Indian Music Experience", "payload": '/select_museum{"museum_name": "ime"}'}
+                {"title": "🧪 Science Gallery Bengaluru", "payload": '/select_museum{"museum_name": "science-gallery"}'}
             ]
         )
         return [SlotSet("language", lang)]
@@ -449,13 +338,8 @@ class ActionSetMuseum(Action):
                 text=t(tracker, "I couldn't identify that museum. Please select from the list:"),
                 buttons=[
                     {"title": "🔬 Visvesvaraya Museum", "payload": '/select_museum{"museum_name": "visvesvaraya"}'},
-                    {"title": "🏛️ Government Museum", "payload": '/select_museum{"museum_name": "govt-museum"}'},
                     {"title": "✈️ HAL Aerospace Museum", "payload": '/select_museum{"museum_name": "hal-aerospace"}'},
-                    {"title": "🖼️ NGMA Bangalore", "payload": '/select_museum{"museum_name": "ngma"}'},
-                    {"title": "🏰 Bangalore Palace", "payload": '/select_museum{"museum_name": "bangalore-palace"}'},
-                    {"title": "🐅 Tipu Sultan's Palace", "payload": '/select_museum{"museum_name": "tipu-palace"}'},
-                    {"title": "🌌 Nehru Planetarium", "payload": '/select_museum{"museum_name": "nehru-planetarium"}'},
-                    {"title": "🎵 Indian Music Experience", "payload": '/select_museum{"museum_name": "ime"}'}
+                    {"title": "🧪 Science Gallery Bengaluru", "payload": '/select_museum{"museum_name": "science-gallery"}'}
                 ]
             )
             return []
@@ -1086,13 +970,8 @@ class ActionChangeMuseum(Action):
             text=t(tracker, "Select a new museum:"),
             buttons=[
                 {"title": "🔬 Visvesvaraya Museum", "payload": '/select_museum{"museum_name": "visvesvaraya"}'},
-                {"title": "🏛️ Government Museum", "payload": '/select_museum{"museum_name": "govt-museum"}'},
                 {"title": "✈️ HAL Aerospace Museum", "payload": '/select_museum{"museum_name": "hal-aerospace"}'},
-                {"title": "🖼️ NGMA Bangalore", "payload": '/select_museum{"museum_name": "ngma"}'},
-                {"title": "🏰 Bangalore Palace", "payload": '/select_museum{"museum_name": "bangalore-palace"}'},
-                {"title": "🐅 Tipu Sultan's Palace", "payload": '/select_museum{"museum_name": "tipu-palace"}'},
-                {"title": "🌌 Nehru Planetarium", "payload": '/select_museum{"museum_name": "nehru-planetarium"}'},
-                {"title": "🎵 Indian Music Experience", "payload": '/select_museum{"museum_name": "ime"}'}
+                {"title": "🧪 Science Gallery Bengaluru", "payload": '/select_museum{"museum_name": "science-gallery"}'}
             ]
         )
         return [SlotSet("selected_museum", None)]
