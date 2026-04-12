@@ -190,10 +190,10 @@ class ActionSetMuseum(Action):
             text = tracker.latest_message.get("text", "")
             museum_id = resolve_museum_id(text)
 
-        museum = MUSEUMS.get(museum_id) if museum_id else None
+        museum = get_all_museums().get(museum_id) if museum_id else None
         if museum:
             dispatcher.utter_message(
-                text=t(tracker, f"You've selected {museum['shortName']}! Location: {museum['location']}. What would you like to do?"),
+                text=t(tracker, f"You've selected {museum['shortName']}! Location: {museum.get('contact', {}).get('address', '')}. What would you like to do?"),
                 buttons=[
                     {"title": "🎫 Book Tickets", "payload": "/book_tickets"},
                     {"title": "ℹ️ Museum Info", "payload": "/museum_info"},
@@ -231,9 +231,14 @@ class ActionStartBooking(Action):
         entities = tracker.latest_message.get("entities", [])
         breakdown = extract_breakdown_from_entities(entities, museum)
         
+        # Capture raw quantity if present (e.g. "3 tickets")
+        qty_entity = next((e["value"] for e in entities if e["entity"] == "quantity"), None)
+        if qty_entity:
+            events.append(SlotSet("booking_quantity", str(qty_entity)))
+
         if breakdown:
             events.append(SlotSet("booking_category", json.dumps(breakdown)))
-            # If all quantities are filled, we can also sum them for booking_quantity
+            # If all quantities are filled, we can also update booking_quantity
             if all(v is not None for v in breakdown.values()):
                 events.append(SlotSet("booking_quantity", str(sum(breakdown.values()))))
 
@@ -521,11 +526,31 @@ class ActionSetQuantity(Action):
             k = list(breakdown.keys())[0]
             breakdown[k] = quantity
 
-        total_qty = sum(v for v in breakdown.values() if v is not None)
+        total_filled_qty = sum(v for v in breakdown.values() if v is not None)
+        
+        try:
+            expected_qty = int(tracker.get_slot("booking_quantity") or 0)
+        except (ValueError, TypeError):
+            expected_qty = 0
+
+        # If we have filled some quantity but it is less than what was requested initially,
+        # ask if they want to add another category.
+        if expected_qty > 0 and total_filled_qty < expected_qty:
+            dispatcher.utter_message(
+                text=t(tracker, f"You have accounted for {total_filled_qty} tickets. You still need {expected_qty - total_filled_qty} more. Would you like to add another category?"),
+                buttons=[
+                    {"title": "➕ Add Another Category", "payload": "/add_more_tickets"},
+                    {"title": "✅ This is enough", "payload": "/action_ask_booking_contact"}
+                ]
+            )
+            return [
+                SlotSet("booking_category", json.dumps(breakdown)),
+                SlotSet("booking_quantity", str(total_filled_qty)) # Update to what we have so far
+            ]
 
         return [
             SlotSet("booking_category", json.dumps(breakdown)),
-            SlotSet("booking_quantity", str(total_qty)),
+            SlotSet("booking_quantity", str(total_filled_qty)),
             FollowupAction("action_ask_booking_contact")
         ]
 class ActionAskBookingContact(Action):
@@ -620,9 +645,9 @@ class ActionShowBookingSummary(Action):
             except:
                 pass
 
-        if not all([museum, date, time_slot, breakdown]):
+        if not museum or not date or not time_slot or not breakdown:
             dispatcher.utter_message(text=t(tracker, "Booking details incomplete. Please start over."))
-            return []
+            return [AllSlotsReset()]
 
         total_amount = 0
         total_tickets = 0
@@ -634,21 +659,31 @@ class ActionShowBookingSummary(Action):
             categories = [{"name": "Adult", "price": 300}, {"name": "Child", "price": 100}, {"name": "Senior Citizen", "price": 150}, {"name": "Student", "price": 150}, {"name": "Foreign National", "price": 650}]
 
         for cat_name, qty in breakdown.items():
-            if not qty: continue
-            price = next((c["price"] for c in categories if c["name"] == cat_name), 300)
-            subtotal = price * int(qty)
+            if qty is None: continue
+            try:
+                qty_val = int(qty)
+            except (ValueError, TypeError):
+                continue
+                
+            price = 300
+            for c in categories:
+                if c.get("name") == cat_name:
+                    price = c.get("price", 300)
+                    break
+            
+            subtotal = price * qty_val
             total_amount += subtotal
-            total_tickets += int(qty)
-            breakdown_text += f"• {qty}x {cat_name} (₹{subtotal})\n"
-            breakdown_array.append({"category": cat_name, "quantity": qty, "price": price})
+            total_tickets += qty_val
+            breakdown_text += f"• {qty_val}x {cat_name} (₹{subtotal:,})\n"
+            breakdown_array.append({"category": cat_name, "quantity": qty_val, "price": price})
 
         summary = (
             f"📋 **Booking Summary**\n\n"
-            f"🏛️ Museum: {museum['shortName']}\n"
+            f"🏛️ Museum: {museum.get('shortName', 'Museum')}\n"
             f"📅 Date: {date}\n"
             f"⏰ Time: {time_slot}\n"
             f"🎟️ Tickets:\n{breakdown_text}"
-            f"💰 Total Amount: ₹{total_amount:,}\n"
+            f"💰 Total Amount: ₹{int(total_amount):,}\n"
             f"📱 Mobile: {tracker.get_slot('booking_mobile')}\n"
             f"📧 Email: {tracker.get_slot('booking_email')}\n\n"
             f"Would you like to proceed to payment?"
@@ -667,14 +702,14 @@ class ActionShowBookingSummary(Action):
             custom={
                 "type": "booking_summary",
                 "data": {
-                    "museumId": museum["id"],
-                    "museumName": museum["shortName"],
+                    "museumId": museum.get("_id", museum.get("id")),
+                    "museumName": museum.get("shortName", "Museum"),
                     "date": date,
                     "timeSlot": time_slot,
                     "category": category_label,
                     "breakdown": breakdown_array,
-                    "quantity": total_tickets,
-                    "total": total_amount
+                    "quantity": int(total_tickets),
+                    "total": int(total_amount)
                 }
             }
         )
@@ -725,14 +760,14 @@ class ActionConfirmPayment(Action):
             custom={
                 "type": "redirect_payment",
                 "data": {
-                    "museumId": museum["id"],
-                    "museumName": museum["shortName"],
+                    "museumId": museum.get("_id", museum.get("id")),
+                    "museumName": museum.get("shortName", "Museum"),
                     "date": date,
                     "timeSlot": time_slot,
                     "category": category_label,
                     "breakdown": breakdown_array,
-                    "quantity": total_tickets,
-                    "total": total_amount,
+                    "quantity": int(total_tickets),
+                    "total": int(total_amount),
                     "mobile": tracker.get_slot("booking_mobile"),
                     "email": tracker.get_slot("booking_email")
                 }
@@ -748,8 +783,9 @@ class ActionShowMuseumHistory(Action):
     def run(self, dispatcher, tracker, domain):
         museum = get_museum(tracker)
         if museum:
+            history = museum.get("history", "History information not available.")
             dispatcher.utter_message(
-                text=t(tracker, f"{museum['shortName']} — History: {museum['history']}"),
+                text=t(tracker, f"{museum.get('shortName', 'Museum')} — History: {history}"),
                 buttons=[
                     {"title": "ℹ️ More Info", "payload": "/museum_info"},
                     {"title": "🎫 Book Tickets", "payload": "/book_tickets"},
@@ -768,9 +804,14 @@ class ActionShowGalleries(Action):
     def run(self, dispatcher, tracker, domain):
         museum = get_museum(tracker)
         if museum:
-            galleries_text = "\n".join([f"🖼️ **{g['name']}** — {g['desc']}" for g in museum["galleries"]])
+            galleries = museum.get("galleries", [])
+            if not galleries:
+                galleries_text = "Gallery information currently unavailable."
+            else:
+                galleries_text = "\n".join([f"🖼️ **{g.get('name', 'Gallery')}** — {g.get('description', g.get('desc', ''))}" for g in galleries])
+            
             dispatcher.utter_message(
-                text=t(tracker, f"{museum['shortName']} — Galleries: {galleries_text}"),
+                text=t(tracker, f"{museum.get('shortName', 'Museum')} — Galleries: {galleries_text}"),
                 buttons=[
                     {"title": "ℹ️ More Info", "payload": "/museum_info"},
                     {"title": "🎫 Book Tickets", "payload": "/book_tickets"},
@@ -789,8 +830,14 @@ class ActionShowHours(Action):
     def run(self, dispatcher, tracker, domain):
         museum = get_museum(tracker)
         if museum:
+            hours_data = museum.get("visitingHours", {})
+            if isinstance(hours_data, dict):
+                hours_text = f"Regular: {hours_data.get('regular', 'N/A')}, Weekend: {hours_data.get('weekend', 'N/A')}, Closed: {hours_data.get('closed', 'N/A')}"
+            else:
+                hours_text = str(hours_data)
+                
             dispatcher.utter_message(
-                text=t(tracker, f"{museum['shortName']} — Visiting Hours: {museum['hours']}"),
+                text=t(tracker, f"{museum.get('shortName', 'Museum')} — Visiting Hours: {hours_text}"),
                 buttons=[
                     {"title": "ℹ️ More Info", "payload": "/museum_info"},
                     {"title": "🎫 Book Tickets", "payload": "/book_tickets"}
@@ -808,9 +855,14 @@ class ActionShowRules(Action):
     def run(self, dispatcher, tracker, domain):
         museum = get_museum(tracker)
         if museum:
-            rules_formatted = "\n".join([f"• {r}" for r in museum["rules"].split("\n")])
+            rules = museum.get("rules", [])
+            if isinstance(rules, list):
+                rules_formatted = "\n".join([f"• {r}" for r in rules])
+            else:
+                rules_formatted = "\n".join([f"• {r}" for r in str(rules).split("\n")])
+                
             dispatcher.utter_message(
-                text=t(tracker, f"{museum['shortName']} — Rules and Guidelines: {rules_formatted}"),
+                text=t(tracker, f"{museum.get('shortName', 'Museum')} — Rules and Guidelines:\n{rules_formatted}"),
                 buttons=[
                     {"title": "ℹ️ More Info", "payload": "/museum_info"},
                     {"title": "🎫 Book Tickets", "payload": "/book_tickets"}
@@ -828,9 +880,14 @@ class ActionShowEvents(Action):
     def run(self, dispatcher, tracker, domain):
         museum = get_museum(tracker)
         if museum:
-            events_text = "\n".join([f"🎪 **{e['name']}** ({e['date']})\n   {e['desc']}" for e in museum["events"]])
+            events = museum.get("events", [])
+            if not events:
+                events_text = "No upcoming events listed at the moment."
+            else:
+                events_text = "\n".join([f"🎪 **{e.get('name', 'Event')}** ({e.get('date', 'TBD')})\n   {e.get('description', e.get('desc', ''))}" for e in events])
+            
             dispatcher.utter_message(
-                text=t(tracker, f"{museum['shortName']} — Upcoming Events: {events_text}"),
+                text=t(tracker, f"{museum.get('shortName', 'Museum')} — Upcoming Events: {events_text}"),
                 buttons=[
                     {"title": "ℹ️ More Info", "payload": "/museum_info"},
                     {"title": "🎫 Book Tickets", "payload": "/book_tickets"}
@@ -848,8 +905,13 @@ class ActionShowContact(Action):
     def run(self, dispatcher, tracker, domain):
         museum = get_museum(tracker)
         if museum:
+            contact = museum.get("contact", {})
+            address = contact.get("address", museum.get("location", "N/A"))
+            phone = contact.get("phone", museum.get("phone", "N/A"))
+            email = contact.get("email", museum.get("email", "N/A"))
+            
             dispatcher.utter_message(
-                text=t(tracker, f"{museum['shortName']} — Contact: Address: {museum['location']}, Phone: {museum['phone']}, Email: {museum['email']}"),
+                text=t(tracker, f"{museum.get('shortName', 'Museum')} — Contact: Address: {address}, Phone: {phone}, Email: {email}"),
                 buttons=[
                     {"title": "ℹ️ More Info", "payload": "/museum_info"},
                     {"title": "🎫 Book Tickets", "payload": "/book_tickets"}
