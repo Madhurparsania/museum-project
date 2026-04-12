@@ -1,6 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaRobot, FaGlobe, FaQrcode, FaClock, FaShieldAlt, FaChartLine, FaArrowRight, FaStar } from 'react-icons/fa';
-import { museums } from '../../data/mockMuseumInfo';
 
 const features = [
     { icon: FaRobot, title: 'AI Chatbot', desc: 'Book tickets through an intelligent conversational assistant' },
@@ -18,6 +18,12 @@ const testimonials = [
 ];
 
 export default function Home() {
+    const [museums, setMuseums] = useState([]);
+
+    useEffect(() => {
+        fetch('/api/museums').then(r => r.json()).then(setMuseums).catch(console.error);
+    }, []);
+
     const featuredMuseums = museums.slice(0, 6);
 
     return (

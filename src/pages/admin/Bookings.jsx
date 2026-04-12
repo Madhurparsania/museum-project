@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { mockBookings } from '../../data/mockBookings';
+import { useState, useEffect } from 'react';
 import { FaSearch, FaFilter, FaEye } from 'react-icons/fa';
 
 const statusColors = {
@@ -12,10 +11,15 @@ export default function Bookings() {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [selectedBooking, setSelectedBooking] = useState(null);
+    const [bookings, setBookings] = useState([]);
 
-    const filtered = mockBookings.filter((b) => {
+    useEffect(() => {
+        fetch('/api/bookings').then(r => r.json()).then(setBookings).catch(console.error);
+    }, []);
+
+    const filtered = bookings.filter((b) => {
         const matchSearch = b.visitor.toLowerCase().includes(search.toLowerCase()) ||
-            b.id.toLowerCase().includes(search.toLowerCase()) ||
+            b.bookingId.toLowerCase().includes(search.toLowerCase()) ||
             b.email.toLowerCase().includes(search.toLowerCase());
         const matchStatus = statusFilter === 'All' || b.status === statusFilter;
         return matchSearch && matchStatus;
@@ -70,8 +74,8 @@ export default function Bookings() {
                         </thead>
                         <tbody>
                             {filtered.map((b) => (
-                                <tr key={b.id} className="border-b border-lgray/30 hover:bg-gold/5 transition-colors">
-                                    <td className="px-4 py-3 font-mono font-medium text-royal">{b.id}</td>
+                                <tr key={b.bookingId} className="border-b border-lgray/30 hover:bg-gold/5 transition-colors">
+                                    <td className="px-4 py-3 font-mono font-medium text-royal">{b.bookingId}</td>
                                     <td className="px-4 py-3">
                                         <p className="font-medium text-navy">{b.visitor}</p>
                                         <p className="text-xs text-lgray-dark">{b.email}</p>
@@ -119,7 +123,7 @@ export default function Bookings() {
                         </div>
                         <div className="space-y-3 text-sm">
                             {[
-                                ['Booking ID', selectedBooking.id],
+                                ['Booking ID', selectedBooking.bookingId],
                                 ['Visitor', selectedBooking.visitor],
                                 ['Email', selectedBooking.email],
                                 ['Visit Date', selectedBooking.date],

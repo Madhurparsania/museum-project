@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Navigate, Link } from 'react-router-dom';
-import { getMuseumById } from '../../data/mockMuseumInfo';
-import { slotAvailability } from '../../data/mockBookings';
 import { FaCalendarAlt, FaClock, FaTicketAlt, FaUsers, FaArrowRight, FaArrowLeft, FaCheckCircle } from 'react-icons/fa';
 
 const STEPS = ['Date', 'Time Slot', 'Category', 'Review'];
 
 export default function BookTickets() {
     const { id } = useParams();
-    const museum = getMuseumById(id);
+    const [museum, setMuseum] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [slotAvailability, setSlotAvailability] = useState({});
     const navigate = useNavigate();
     const [step, setStep] = useState(0);
     const [booking, setBooking] = useState({
@@ -18,6 +18,24 @@ export default function BookTickets() {
         categories: {},
     });
 
+    useEffect(() => {
+        fetch(`/api/museums/${id}`)
+            .then(r => r.ok ? r.json() : null)
+            .then(data => { setMuseum(data); setLoading(false); })
+            .catch(() => setLoading(false));
+    }, [id]);
+
+    // Fetch slot availability when date changes
+    useEffect(() => {
+        if (booking.date && id) {
+            fetch(`/api/slots/${id}/${booking.date}`)
+                .then(r => r.json())
+                .then(data => setSlotAvailability(data.slots || {}))
+                .catch(() => setSlotAvailability({}));
+        }
+    }, [booking.date, id]);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center"><p className="text-lgray-dark">Loading...</p></div>;
     if (!museum) return <Navigate to="/museums" replace />;
 
     const totalTickets = Object.values(booking.categories).reduce((a, b) => a + b, 0);
@@ -26,9 +44,8 @@ export default function BookTickets() {
     }, 0);
 
     function getAvailability(slotId) {
-        const dateKey = booking.date;
-        if (slotAvailability[dateKey] && slotAvailability[dateKey][slotId] !== undefined) {
-            return slotAvailability[dateKey][slotId];
+        if (slotAvailability[slotId] !== undefined) {
+            return slotAvailability[slotId];
         }
         return Math.floor(Math.random() * 150) + 50;
     }

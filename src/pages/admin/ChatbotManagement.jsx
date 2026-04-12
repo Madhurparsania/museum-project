@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { chatbotResponses, languageOptions } from '../../data/chatbotResponses';
+import { useState, useEffect } from 'react';
 import { FaEdit, FaGlobe, FaTimes, FaSave, FaRobot } from 'react-icons/fa';
 
 const intentCategories = [
@@ -33,8 +32,19 @@ export default function ChatbotManagement() {
     const [activeLang, setActiveLang] = useState('en');
     const [editingField, setEditingField] = useState(null);
     const [editValue, setEditValue] = useState('');
+    const [languageOptions, setLanguageOptions] = useState([]);
+    const [responses, setResponses] = useState({});
 
-    const responses = chatbotResponses[activeLang];
+    useEffect(() => {
+        fetch('/api/chatbot/languages').then(r => r.json()).then(setLanguageOptions).catch(console.error);
+    }, []);
+
+    useEffect(() => {
+        fetch(`/api/chatbot/responses/${activeLang}`)
+            .then(r => r.json())
+            .then(setResponses)
+            .catch(console.error);
+    }, [activeLang]);
 
     function startEdit(key, value) {
         setEditingField(key);

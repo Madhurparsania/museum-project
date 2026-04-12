@@ -1,9 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Line, Bar, Doughnut, Pie } from 'react-chartjs-2';
 import {
     Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
     BarElement, ArcElement, Title, Tooltip, Legend, Filler
 } from 'chart.js';
-import { analyticsData } from '../../data/mockAnalytics';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
@@ -20,6 +20,13 @@ const chartBase = {
 };
 
 export default function Analytics() {
+    const [analyticsData, setAnalyticsData] = useState(null);
+
+    useEffect(() => {
+        fetch('/api/analytics').then(r => r.json()).then(setAnalyticsData).catch(console.error);
+    }, []);
+
+    if (!analyticsData) return <div className="flex items-center justify-center py-20"><p className="text-lgray-dark">Loading analytics...</p></div>;
     const monthlyVisitorData = {
         labels: analyticsData.monthlyVisitors.labels,
         datasets: [{

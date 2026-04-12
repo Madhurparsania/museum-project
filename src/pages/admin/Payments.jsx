@@ -1,4 +1,4 @@
-import { mockPayments } from '../../data/mockBookings';
+import { useState, useEffect } from 'react';
 import { FaMoneyBillWave, FaCheckCircle, FaUndo } from 'react-icons/fa';
 
 const statusIcons = {
@@ -7,8 +7,14 @@ const statusIcons = {
 };
 
 export default function Payments() {
-    const totalRevenue = mockPayments.filter(p => p.status === 'Success').reduce((sum, p) => sum + p.amount, 0);
-    const totalRefunded = mockPayments.filter(p => p.status === 'Refunded').reduce((sum, p) => sum + p.amount, 0);
+    const [payments, setPayments] = useState([]);
+
+    useEffect(() => {
+        fetch('/api/payments').then(r => r.json()).then(setPayments).catch(console.error);
+    }, []);
+
+    const totalRevenue = payments.filter(p => p.status === 'Success').reduce((sum, p) => sum + p.amount, 0);
+    const totalRefunded = payments.filter(p => p.status === 'Refunded').reduce((sum, p) => sum + p.amount, 0);
 
     return (
         <div className="space-y-6">
@@ -20,7 +26,7 @@ export default function Payments() {
                     <p className="text-xs text-lgray-dark">Total Revenue</p>
                 </div>
                 <div className="stat-card">
-                    <p className="text-2xl font-bold text-navy">{mockPayments.filter(p => p.status === 'Success').length}</p>
+                    <p className="text-2xl font-bold text-navy">{payments.filter(p => p.status === 'Success').length}</p>
                     <p className="text-sm text-lgray-dark">Successful Payments</p>
                 </div>
                 <div className="stat-card">
@@ -44,11 +50,11 @@ export default function Payments() {
                             </tr>
                         </thead>
                         <tbody>
-                            {mockPayments.map((p) => {
+                            {payments.map((p) => {
                                 const statusInfo = statusIcons[p.status] || statusIcons.Success;
                                 return (
-                                    <tr key={p.id} className="border-b border-lgray/30 hover:bg-gold/5 transition-colors">
-                                        <td className="px-4 py-3 font-mono font-medium text-royal">{p.id}</td>
+                                    <tr key={p.paymentId} className="border-b border-lgray/30 hover:bg-gold/5 transition-colors">
+                                        <td className="px-4 py-3 font-mono font-medium text-royal">{p.paymentId}</td>
                                         <td className="px-4 py-3 font-mono text-lgray-dark">{p.bookingId}</td>
                                         <td className="px-4 py-3 text-right font-bold text-gold">₹{p.amount.toLocaleString()}</td>
                                         <td className="px-4 py-3">

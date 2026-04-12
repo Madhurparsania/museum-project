@@ -1,5 +1,23 @@
-import { chatbotResponses } from '../data/chatbotResponses';
-import { museums } from '../data/mockMuseumInfo';
+// Data loaded from API
+let museumsData = [];
+let chatbotResponsesData = {};
+
+// Fetch initial data
+async function loadData() {
+    try {
+        const [museumsRes, responsesRes] = await Promise.all([
+            fetch('/api/museums').then(r => r.json()),
+            fetch('/api/chatbot/responses').then(r => r.json()),
+        ]);
+        museumsData = museumsRes;
+        // Convert array to object keyed by lang
+        chatbotResponsesData = {};
+        responsesRes.forEach(r => { chatbotResponsesData[r.lang] = r; });
+    } catch (err) {
+        console.error('Failed to load chatbot data:', err);
+    }
+}
+loadData();
 
 const STATES = {
     INIT: 'INIT',
@@ -22,11 +40,11 @@ export function createChatbotEngine() {
     let selectedMuseum = null;
 
     function getSelectedMuseum() {
-        return selectedMuseum || museums[0];
+        return selectedMuseum || museumsData[0] || {};
     }
 
     function getResponses() {
-        return chatbotResponses[language] || chatbotResponses.en;
+        return chatbotResponsesData[language] || chatbotResponsesData.en || {};
     }
 
     // Validate a date string: must be YYYY-MM-DD, not in the past, not >30 days away
@@ -72,7 +90,7 @@ export function createChatbotEngine() {
                     { text: 'اردو', value: 'lang_ur' },
                 ];
             case STATES.MUSEUM_SELECT:
-                return museums.map((m, i) => ({
+                return museumsData.map((m, i) => ({
                     text: `${m.emoji} ${m.shortName}`,
                     value: `museum_${i}`,
                 }));
@@ -206,12 +224,12 @@ export function createChatbotEngine() {
                 if (text.startsWith('museum_')) {
                     museumIdx = parseInt(text.split('_')[1]);
                 } else {
-                    museumIdx = museums.findIndex(m =>
+                    museumIdx = museumsData.findIndex(m =>
                         text.includes(m.shortName.toLowerCase()) || text.includes(m.name.toLowerCase())
                     );
                 }
-                if (museumIdx >= 0 && museumIdx < museums.length) {
-                    selectedMuseum = museums[museumIdx];
+                if (museumIdx >= 0 && museumIdx < museumsData.length) {
+                    selectedMuseum = museumsData[museumIdx];
                 } else {
                     return [{ text: "⚠️ Museum not found. Please select from the options:", quickReplies: getQuickReplies() }];
                 }
@@ -226,7 +244,7 @@ export function createChatbotEngine() {
             case STATES.MAIN_MENU:
                 if (text.includes('book') || text === 'book' || text === '1' || text === 'ticket') {
                     state = STATES.BOOKING_DATE;
-                    bookingData = { museumName: getSelectedMuseum().shortName, museumId: getSelectedMuseum().id };
+                    bookingData = { museumName: getSelectedMuseum().shortName, museumId: getSelectedMuseum()._id };
                     return [{
                         text: r.booking.selectDate,
                         showDatePicker: true,

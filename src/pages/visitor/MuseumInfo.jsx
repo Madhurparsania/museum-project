@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { getMuseumById } from '../../data/mockMuseumInfo';
 import { FaClock, FaMapMarkerAlt, FaPhone, FaEnvelope, FaGlobe, FaInfoCircle, FaLandmark, FaCalendarAlt, FaArrowRight, FaStar, FaTicketAlt } from 'react-icons/fa';
 
 const tabs = [
@@ -12,9 +11,18 @@ const tabs = [
 
 export default function MuseumInfo() {
     const { id } = useParams();
-    const museum = getMuseumById(id);
+    const [museum, setMuseum] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('about');
 
+    useEffect(() => {
+        fetch(`/api/museums/${id}`)
+            .then(r => r.ok ? r.json() : null)
+            .then(data => { setMuseum(data); setLoading(false); })
+            .catch(() => setLoading(false));
+    }, [id]);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center"><p className="text-lgray-dark">Loading...</p></div>;
     if (!museum) return <Navigate to="/museums" replace />;
 
     return (

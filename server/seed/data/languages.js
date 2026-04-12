@@ -1,0 +1,15 @@
+module.exports = [
+  { code: 'en', name: 'English', flag: '🇮🇳' },
+  { code: 'hi', name: 'हिंदी (Hindi)', flag: '🇮🇳' },
+  { code: 'bn', name: 'বাংলা (Bengali)', flag: '🇮🇳' },
+  { code: 'ta', name: 'தமிழ் (Tamil)', flag: '🇮🇳' },
+  { code: 'te', name: 'తెలుగు (Telugu)', flag: '🇮🇳' },
+  { code: 'mr', name: 'मराठी (Marathi)', flag: '🇮🇳' },
+  { code: 'gu', name: 'ગુજરાતી (Gujarati)', flag: '🇮🇳' },
+  { code: 'kn', name: 'ಕನ್ನಡ (Kannada)', flag: '🇮🇳' },
+  { code: 'ml', name: 'മലയാളം (Malayalam)', flag: '🇮🇳' },
+  { code: 'pa', name: 'ਪੰਜਾਬੀ (Punjabi)', flag: '🇮🇳' },
+  { code: 'or', name: 'ଓଡ଼ିଆ (Odia)', flag: '🇮🇳' },
+  { code: 'as', name: 'অসমীয়া (Assamese)', flag: '🇮🇳' },
+  { code: 'ur', name: 'اردو (Urdu)', flag: '🇮🇳' },
+];

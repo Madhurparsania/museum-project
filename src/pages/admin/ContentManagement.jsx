@@ -1,14 +1,29 @@
-import { useState } from 'react';
-import { museums } from '../../data/mockMuseumInfo';
+import { useState, useEffect } from 'react';
 import { FaSave, FaEdit, FaPlus, FaTrash, FaTimes } from 'react-icons/fa';
 
 export default function ContentManagement() {
-    const defaultMuseum = museums[0];
+    const [museums, setMuseums] = useState([]);
     const [editingSection, setEditingSection] = useState(null);
-    const [museumName, setMuseumName] = useState(defaultMuseum.name);
-    const [museumDesc, setMuseumDesc] = useState(defaultMuseum.description);
-    const [galleries, setGalleries] = useState(defaultMuseum.galleries);
-    const [events, setEvents] = useState(defaultMuseum.events);
+    const [museumName, setMuseumName] = useState('');
+    const [museumDesc, setMuseumDesc] = useState('');
+    const [galleries, setGalleries] = useState([]);
+    const [events, setEvents] = useState([]);
+
+    useEffect(() => {
+        fetch('/api/museums').then(r => r.json()).then(data => {
+            setMuseums(data);
+            if (data.length > 0) {
+                setMuseumName(data[0].name);
+                setMuseumDesc(data[0].description);
+                setGalleries(data[0].galleries);
+                setEvents(data[0].events);
+            }
+        }).catch(console.error);
+    }, []);
+
+    const defaultMuseum = museums[0] || {};
+
+    if (museums.length === 0) return <div className="flex items-center justify-center py-20"><p className="text-lgray-dark">Loading...</p></div>;
 
     return (
         <div className="space-y-6">

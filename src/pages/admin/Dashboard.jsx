@@ -1,21 +1,28 @@
+import { useState, useEffect } from 'react';
 import { FaUsers, FaMoneyBillWave, FaCalendarCheck, FaClock, FaArrowUp, FaStar } from 'react-icons/fa';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
     BarElement, ArcElement, Title, Tooltip, Legend, Filler
 } from 'chart.js';
-import { analyticsData } from '../../data/mockAnalytics';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
-const stats = [
-    { label: 'Total Bookings', value: '1,247', change: '+12.5%', icon: FaCalendarCheck, color: 'bg-royal' },
-    { label: 'Revenue', value: '₹4,85,600', change: '+8.3%', icon: FaMoneyBillWave, color: 'bg-green-600' },
-    { label: 'Visitors Today', value: '342', change: '+15%', icon: FaUsers, color: 'bg-gold' },
-    { label: 'Active Slots', value: '5/6', change: '', icon: FaClock, color: 'bg-navy' },
-];
-
 export default function Dashboard() {
+    const [analyticsData, setAnalyticsData] = useState(null);
+
+    useEffect(() => {
+        fetch('/api/analytics').then(r => r.json()).then(setAnalyticsData).catch(console.error);
+    }, []);
+
+    if (!analyticsData) return <div className="flex items-center justify-center py-20"><p className="text-lgray-dark">Loading analytics...</p></div>;
+
+    const stats = [
+        { label: 'Total Bookings', value: analyticsData.overview.totalBookings.toLocaleString(), change: `+${analyticsData.overview.monthlyGrowth}%`, icon: FaCalendarCheck, color: 'bg-royal' },
+        { label: 'Revenue', value: `₹${analyticsData.overview.totalRevenue.toLocaleString()}`, change: '+8.3%', icon: FaMoneyBillWave, color: 'bg-green-600' },
+        { label: 'Visitors Today', value: String(analyticsData.overview.visitorsToday), change: '+15%', icon: FaUsers, color: 'bg-gold' },
+        { label: 'Active Slots', value: `${analyticsData.overview.activeSlots}/6`, change: '', icon: FaClock, color: 'bg-navy' },
+    ];
     const lineData = {
         labels: analyticsData.dailyVisitors.labels,
         datasets: [{

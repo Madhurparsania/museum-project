@@ -49,163 +49,33 @@ def t(tracker, text):
     return translate_text(text, lang)
 
 # ============================================================
-# Museum Data (matches frontend mockMuseumInfo.js)
+# Museum Data (Fetched dynamically from API)
 # ============================================================
+import requests
 
-MUSEUMS = {
-    "visvesvaraya": {
-        "id": "visvesvaraya",
-        "name": "Visvesvaraya Industrial & Technological Museum",
-        "shortName": "Visvesvaraya Museum",
-        "location": "Kasturba Road, Bangalore - 560001",
-        "phone": "+91-80-2286-4563",
-        "email": "info@vismuseum.gov.in",
-        "history": "Founded in 1962, the Visvesvaraya Industrial and Technological Museum is named after Sir M. Visvesvaraya, the renowned engineer and former Diwan of Mysore. The museum houses over 500 exhibits across 7 galleries, covering topics from space exploration to biotechnology. It has welcomed over 30 million visitors since its inception.",
-        "hours": "Tuesday to Sunday: 9:30 AM - 6:00 PM\nClosed: Monday\nLast Entry: 5:00 PM\nPublic Holidays: 9:30 AM - 6:00 PM",
-        "rules": "Photography allowed in designated areas only (no flash)\nNo food or beverages inside galleries\nMaintain silence in exhibition areas\nChildren under 12 must be accompanied by adults\nLarge bags must be deposited at cloakroom\nDo not touch exhibits",
-        "galleries": [
-            {"name": "Engine Hall", "desc": "Steam engines, motors, and mechanical marvels"},
-            {"name": "Space Gallery", "desc": "Space exploration, satellites, and rockets"},
-            {"name": "Electrotechnic Gallery", "desc": "Electricity, magnetism, and electronics"},
-            {"name": "Fun Science Gallery", "desc": "Interactive science experiments for all ages"},
-            {"name": "Dinosaurium", "desc": "Life-size dinosaur models and prehistoric exhibits"},
-            {"name": "Wright Brothers Gallery", "desc": "Aviation history and aircraft models"},
-            {"name": "Biotechnology Gallery", "desc": "DNA, genetics, and biotech innovations"}
-        ],
-        "events": [
-            {"name": "Science Day Celebration", "date": "Feb 28, 2026", "desc": "Interactive science demos and workshops"},
-            {"name": "Robotics Workshop", "date": "Every Saturday", "desc": "Hands-on robotics for kids aged 8-14"},
-            {"name": "Night at the Museum", "date": "Mar 15, 2026", "desc": "Special evening tour with light shows"}
-        ],
-        "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
-    },
-    "hal-aerospace": {
-        "id": "hal-aerospace",
-        "name": "HAL Heritage Centre & Aerospace Museum",
-        "shortName": "HAL Aerospace Museum",
-        "location": "HAL Airport Road, Bangalore - 560017",
-        "phone": "+91-80-2522-0649",
-        "email": "museum@hal-india.com",
-        "history": "Established in 2001 by Hindustan Aeronautics Limited, this museum showcases India's aviation journey. It features real aircraft, engines, flight simulators, and the history of Indian aerospace defense spanning over 80 years.",
-        "hours": "All days: 9:00 AM - 5:00 PM\nClosed: Major national holidays\nLast Entry: 4:30 PM",
-        "rules": "Photography allowed everywhere\nFlight simulator rules apply\nSafety instructions must be followed near aircraft\nChildren under 8 must be supervised",
-        "galleries": [
-            {"name": "Aircraft Display", "desc": "Real fighter jets, helicopters, and trainer aircraft"},
-            {"name": "Engine Gallery", "desc": "Jet engines, turboprops, and aerospace engines"},
-            {"name": "Flight Simulator Zone", "desc": "VR and physical flight simulators"},
-            {"name": "Heritage Gallery", "desc": "HAL's 80-year journey in Indian aviation"}
-        ],
-        "events": [
-            {"name": "Air Show Preview", "date": "Feb 2026", "desc": "Preview of Aero India exhibits"},
-            {"name": "Aviation Career Day", "date": "Mar 2026", "desc": "Career guidance in aerospace industry"}
-        ],
-        "ticketPrices": {"Adult": 300, "Child": 100, "Senior Citizen": 150, "Student": 150, "Foreign National": 650}
-    },
-    "science-gallery": {
-        "id": "science-gallery",
-        "name": "Science Gallery Bengaluru",
-        "shortName": "Science Gallery",
-        "location": "Sanjaynagar, Bangalore - 560024",
-        "phone": "+91-80-0000-0000",
-        "email": "info@sciencegallery.com",
-        "history": "Envisioned as Asia's first Science Gallery, it officially opened to the public in January 2024. It is part of the Global Science Gallery Network and aims to engage young adults and foster critical appreciation for science through open-ended experiments.",
-        "hours": "Wednesday, Thursday: 10:00 AM - 6:00 PM\nFriday to Sunday: 10:00 AM - 8:00 PM\nClosed: Monday & Tuesday\nLast Entry: 1 hour before closing",
-        "rules": "Respect the experimental setups\nEngage and ask questions to Mediators\nPhotography rules vary by exhibition season\nMaintain general decorum",
-        "galleries": [
-            {"name": "Exhibition Galleries", "desc": "Ever-changing, thematic exhibitions"},
-            {"name": "Public Lab Complex", "desc": "Experimental spaces for intergenerational co-inquiry"}
-        ],
-        "events": [
-            {"name": "Trans-disciplinary Workshops", "date": "Varies", "desc": "Interactive sessions blending art and science"},
-            {"name": "Guided Tour by Experimentors", "date": "Daily", "desc": "Enriching insights discussed with trained young adults"}
-        ],
-        "ticketPrices": {"General Admission": 0}
-    }
-}
+API_URL = "http://localhost:5000/api"
+_cached_museums = None
 
-TIME_SLOTS = [
-    "10:00 AM - 11:30 AM",
-    "11:30 AM - 1:00 PM",
-    "1:00 PM - 2:30 PM",
-    "2:30 PM - 4:00 PM",
-    "4:00 PM - 5:30 PM",
-    "5:30 PM - 7:00 PM"
-]
-
-CATEGORIES = [
-    {"name": "Adult", "price": 300},
-    {"name": "Child", "price": 100},
-    {"name": "Senior Citizen", "price": 150},
-    {"name": "Student", "price": 150},
-    {"name": "Foreign National", "price": 650}
-]
-
+def get_all_museums():
+    global _cached_museums
+    if not _cached_museums:
+        try:
+            res = requests.get(f"{API_URL}/museums", timeout=5)
+            res.raise_for_status()
+            data = res.json()
+            _cached_museums = {m.get("_id", m.get("id")): m for m in data}
+        except Exception as e:
+            print(f"Error fetching museums: {e}")
+            _cached_museums = {}
+    return _cached_museums
 
 def get_museum(tracker):
     """Get museum data from slot."""
     museum_id = tracker.get_slot("selected_museum")
-    if museum_id and museum_id in MUSEUMS:
-        return MUSEUMS[museum_id]
+    museums = get_all_museums()
+    if museum_id and museum_id in museums:
+        return museums[museum_id]
     return None
-
-
-# Aliases for fuzzy museum name matching
-MUSEUM_ALIASES = {
-    # Science Gallery
-    "science-gallery": "science-gallery",
-    "science gallery": "science-gallery",
-    "science gallery bengaluru": "science-gallery",
-    "sgb": "science-gallery",
-    # Visvesvaraya
-    "visvesvaraya": "visvesvaraya",
-    "visv": "visvesvaraya",
-    "science museum": "visvesvaraya",
-    "industrial museum": "visvesvaraya",
-    "technological museum": "visvesvaraya",
-    # Government Museum
-    "govt-museum": "govt-museum",
-    "government museum": "govt-museum",
-    "govt museum": "govt-museum",
-    "state museum": "govt-museum",
-    # HAL Aerospace
-    "hal-aerospace": "hal-aerospace",
-    "hal": "hal-aerospace",
-    "aerospace": "hal-aerospace",
-    "aerospace museum": "hal-aerospace",
-    "hal aerospace": "hal-aerospace",
-    "hal aerospace museum": "hal-aerospace",
-    "aviation museum": "hal-aerospace",
-    "air force museum": "hal-aerospace",
-    # NGMA
-    "ngma": "ngma",
-    "national gallery": "ngma",
-    "modern art": "ngma",
-    "art gallery": "ngma",
-    "ngma bangalore": "ngma",
-    # Bangalore Palace
-    "bangalore-palace": "bangalore-palace",
-    "bangalore palace": "bangalore-palace",
-    "palace": "bangalore-palace",
-    # Tipu Sultan's Palace
-    "tipu-palace": "tipu-palace",
-    "tipu": "tipu-palace",
-    "tipu sultan": "tipu-palace",
-    "tipu palace": "tipu-palace",
-    "tipu sultan's palace": "tipu-palace",
-    "summer palace": "tipu-palace",
-    # Nehru Planetarium
-    "nehru-planetarium": "nehru-planetarium",
-    "planetarium": "nehru-planetarium",
-    "nehru planetarium": "nehru-planetarium",
-    "nehru": "nehru-planetarium",
-    # Indian Music Experience
-    "ime": "ime",
-    "music museum": "ime",
-    "music experience": "ime",
-    "indian music": "ime",
-    "indian music experience": "ime",
-}
-
 
 def resolve_museum_id(raw_value):
     """Resolve a free-text museum name to a museum dict key."""
@@ -213,32 +83,32 @@ def resolve_museum_id(raw_value):
         return None
 
     val = raw_value.strip().lower()
+    museums = get_all_museums()
 
     # 1. Exact key match
-    if val in MUSEUMS:
+    if val in museums:
         return val
 
-    # 2. Alias match
-    if val in MUSEUM_ALIASES:
-        return MUSEUM_ALIASES[val]
-
-    # 3. Partial match — check if any alias is contained in the input
-    for alias, museum_id in MUSEUM_ALIASES.items():
-        if alias in val or val in alias:
-            return museum_id
-
-    # 4. Check against museum short names and full names
-    for mid, mdata in MUSEUMS.items():
-        if val in mdata["shortName"].lower() or val in mdata["name"].lower():
+    # 2. Check aliases and names
+    for mid, mdata in museums.items():
+        if val in mdata.get("shortName", "").lower() or val in mdata.get("name", "").lower():
             return mid
-        if mdata["shortName"].lower() in val or mdata["name"].lower() in val:
+        if mdata.get("shortName", "").lower() in val or mdata.get("name", "").lower() in val:
             return mid
-
+        # Check aliases array
+        for alias in mdata.get("aliases", []):
+            if val in alias.lower() or alias.lower() in val:
+                return mid
     return None
 
 
-def normalize_category(cat_str):
-    for c in CATEGORIES:
+def normalize_category(cat_str, museum):
+    categories = museum.get("ticketCategories", []) if museum else []
+    # Fallback if empty to avoid crashing
+    if not categories:
+        categories = [{"name": "Adult", "price": 300}, {"name": "Child", "price": 100}, {"name": "Senior Citizen", "price": 150}, {"name": "Student", "price": 150}, {"name": "Foreign National", "price": 650}]
+
+    for c in categories:
         cat_name = c["name"].lower()
         if cat_name in cat_str.lower() or cat_str.lower() in cat_name:
             return c["name"]
@@ -248,14 +118,14 @@ def normalize_category(cat_str):
             return c["name"]
     return None
 
-def extract_breakdown_from_entities(entities):
+def extract_breakdown_from_entities(entities, museum):
     category_entities = [e for e in entities if e["entity"] == "ticket_category"]
     qty_entities = [e for e in entities if e["entity"] == "quantity"]
     
     breakdown = {}
     if category_entities:
         for cat in category_entities:
-            norm_cat = normalize_category(cat["value"])
+            norm_cat = normalize_category(cat["value"], museum)
             if not norm_cat:
                 continue
                 
@@ -359,7 +229,7 @@ class ActionStartBooking(Action):
         
         # Extract early breakdown if user typed everything in one sentence
         entities = tracker.latest_message.get("entities", [])
-        breakdown = extract_breakdown_from_entities(entities)
+        breakdown = extract_breakdown_from_entities(entities, museum)
         
         if breakdown:
             events.append(SlotSet("booking_category", json.dumps(breakdown)))
@@ -443,11 +313,17 @@ class ActionShowTimeSlots(Action):
         return "action_show_time_slots"
 
     def run(self, dispatcher, tracker, domain):
+        museum = get_museum(tracker)
+        time_slots = museum.get("timeSlots", []) if museum else []
+        if not time_slots:
+            time_slots = [{"time": "10:00 AM - 11:30 AM"}, {"time": "11:30 AM - 1:00 PM"}, {"time": "1:00 PM - 2:30 PM"}, {"time": "2:30 PM - 4:00 PM"}, {"time": "4:00 PM - 5:30 PM"}, {"time": "5:30 PM - 7:00 PM"}]
+
         buttons = []
-        for i, slot in enumerate(TIME_SLOTS):
+        for i, slot in enumerate(time_slots):
+            slot_time = slot.get("time", slot)
             buttons.append({
-                "title": f"{i+1}️⃣ {slot}",
-                "payload": f'/select_time_slot{{"time_slot": "{slot}"}}'
+                "title": f"{i+1}️⃣ {slot_time}",
+                "payload": f'/select_time_slot{{"time_slot": "{slot_time}"}}'
             })
 
         dispatcher.utter_message(
@@ -470,11 +346,16 @@ class ActionSetTimeSlot(Action):
                     slot = e["value"]
                     break
 
+        museum = get_museum(tracker)
+        time_slots = museum.get("timeSlots", []) if museum else []
+        if not time_slots:
+             time_slots = [{"time": "10:00 AM - 11:30 AM"}, {"time": "11:30 AM - 1:00 PM"}, {"time": "1:00 PM - 2:30 PM"}, {"time": "2:30 PM - 4:00 PM"}, {"time": "4:00 PM - 5:30 PM"}, {"time": "5:30 PM - 7:00 PM"}]
+
         # Handle slot number input
         if slot and str(slot).isdigit(): # Ensure slot is a string digit before converting
             idx = int(slot) - 1
-            if 0 <= idx < len(TIME_SLOTS):
-                slot = TIME_SLOTS[idx]
+            if 0 <= idx < len(time_slots):
+                slot = time_slots[idx].get("time", time_slots[idx])
 
         if slot:
             # Check if category is already provided
@@ -497,8 +378,13 @@ class ActionShowCategories(Action):
         return "action_show_categories"
 
     def run(self, dispatcher, tracker, domain):
+        museum = get_museum(tracker)
+        categories = museum.get("ticketCategories", []) if museum else []
+        if not categories:
+            categories = [{"name": "Adult", "price": 300}, {"name": "Child", "price": 100}, {"name": "Senior Citizen", "price": 150}, {"name": "Student", "price": 150}, {"name": "Foreign National", "price": 650}]
+
         buttons = []
-        for i, cat in enumerate(CATEGORIES):
+        for i, cat in enumerate(categories):
             buttons.append({
                 "title": f"{cat['name']} - ₹{cat['price']}",
                 "payload": f'/select_category{{"ticket_category": "{cat["name"]}"}}'
@@ -524,12 +410,13 @@ class ActionSetCategory(Action):
         
         breakdown = {}
         
+        museum = get_museum(tracker)
         existing_cat = tracker.get_slot("booking_category")
         if existing_cat:
             try:
                 breakdown = json.loads(existing_cat)
             except json.JSONDecodeError:
-                norm = normalize_category(existing_cat)
+                norm = normalize_category(existing_cat, museum)
                 if norm:
                     breakdown = {norm: None}
 
@@ -537,7 +424,7 @@ class ActionSetCategory(Action):
         if category_entities:
             # Only completely replace if the user typed entirely new categories,
             # otherwise merge or use the global extractor
-            new_breakdown = extract_breakdown_from_entities(entities)
+            new_breakdown = extract_breakdown_from_entities(entities, museum)
             if new_breakdown:
                 breakdown.update(new_breakdown)
 
@@ -548,11 +435,15 @@ class ActionSetCategory(Action):
         # Check if any category is missing a quantity
         missing_qty = any(v is None for v in breakdown.values())
         
+        categories = museum.get("ticketCategories", []) if museum else []
+        if not categories:
+            categories = [{"name": "Adult", "price": 300}, {"name": "Child", "price": 100}, {"name": "Senior Citizen", "price": 150}, {"name": "Student", "price": 150}, {"name": "Foreign National", "price": 650}]
+
         if not missing_qty:
             # All categories have quantities! Format a nice message
             parts = []
             for k, v in breakdown.items():
-                price = next((c["price"] for c in CATEGORIES if c["name"] == k), 300)
+                price = next((c["price"] for c in categories if c["name"] == k), 300)
                 parts.append(f"{v}x {k} (₹{price})")
             
             dispatcher.utter_message(text=t(tracker, f"Tickets: {', '.join(parts)}"))
@@ -568,7 +459,7 @@ class ActionSetCategory(Action):
         else:
             # Not all have quantities. Ask for quantity for the first missing one.
             missing_cat = next(k for k, v in breakdown.items() if v is None)
-            price = next((c["price"] for c in CATEGORIES if c["name"] == missing_cat), 300)
+            price = next((c["price"] for c in categories if c["name"] == missing_cat), 300)
             
             dispatcher.utter_message(
                 text=t(tracker, f"Category: {missing_cat} (Rs.{price}/ticket). How many {missing_cat} tickets do you need? (1-10)"),
@@ -738,9 +629,13 @@ class ActionShowBookingSummary(Action):
         breakdown_text = ""
         breakdown_array = []
         
+        categories = museum.get("ticketCategories", []) if museum else []
+        if not categories:
+            categories = [{"name": "Adult", "price": 300}, {"name": "Child", "price": 100}, {"name": "Senior Citizen", "price": 150}, {"name": "Student", "price": 150}, {"name": "Foreign National", "price": 650}]
+
         for cat_name, qty in breakdown.items():
             if not qty: continue
-            price = next((c["price"] for c in CATEGORIES if c["name"] == cat_name), 300)
+            price = next((c["price"] for c in categories if c["name"] == cat_name), 300)
             subtotal = price * int(qty)
             total_amount += subtotal
             total_tickets += int(qty)
@@ -811,9 +706,13 @@ class ActionConfirmPayment(Action):
         total_tickets = 0
         breakdown_array = []
         
+        categories = museum.get("ticketCategories", []) if museum else []
+        if not categories:
+            categories = [{"name": "Adult", "price": 300}, {"name": "Child", "price": 100}, {"name": "Senior Citizen", "price": 150}, {"name": "Student", "price": 150}, {"name": "Foreign National", "price": 650}]
+
         for cat_name, qty in breakdown.items():
             if not qty: continue
-            price = next((c["price"] for c in CATEGORIES if c["name"] == cat_name), 300)
+            price = next((c["price"] for c in categories if c["name"] == cat_name), 300)
             subtotal = price * int(qty)
             total_amount += subtotal
             total_tickets += int(qty)

@@ -1,10 +1,14 @@
 import { Link } from 'react-router-dom';
-import { museums } from '../../data/mockMuseumInfo';
 import { FaStar, FaArrowRight, FaMapMarkerAlt, FaClock, FaSearch } from 'react-icons/fa';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Museums() {
     const [search, setSearch] = useState('');
+    const [museums, setMuseums] = useState([]);
+
+    useEffect(() => {
+        fetch('/api/museums').then(r => r.json()).then(setMuseums).catch(console.error);
+    }, []);
 
     const filtered = museums.filter(m =>
         m.name.toLowerCase().includes(search.toLowerCase()) ||
