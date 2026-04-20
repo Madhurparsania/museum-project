@@ -7,7 +7,15 @@ import ChatWidget from './components/chatbot/ChatWidget';
 // Visitor Pages
 import Home from './pages/visitor/Home';
 import Museums from './pages/visitor/Museums';
-import MuseumInfo from './pages/visitor/MuseumInfo';
+import MuseumLayout from './components/visitor/MuseumLayout';
+import MuseumAbout from './pages/visitor/MuseumAbout';
+import MuseumGalleries from './pages/visitor/MuseumGalleries';
+import MuseumArtifacts from './pages/visitor/MuseumArtifacts';
+import MuseumEvents from './pages/visitor/MuseumEvents';
+import MuseumVisit from './pages/visitor/MuseumVisit';
+import GalleryDetail from './pages/visitor/GalleryDetail';
+import ArtifactDetail from './pages/visitor/ArtifactDetail';
+import EventDetail from './pages/visitor/EventDetail';
 import BookTickets from './pages/visitor/BookTickets';
 import Payment from './pages/visitor/Payment';
 import Confirmation from './pages/visitor/Confirmation';
@@ -55,7 +63,21 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/museums" element={<Museums />} />
-          <Route path="/museum/:id" element={<MuseumInfo />} />
+          
+          {/* Museum Nested Routes */}
+          <Route path="/museum/:id" element={<MuseumLayout />}>
+            <Route index element={<MuseumAbout />} />
+            <Route path="galleries" element={<MuseumGalleries />} />
+            <Route path="artifacts" element={<MuseumArtifacts />} />
+            <Route path="events" element={<MuseumEvents />} />
+            <Route path="visit" element={<MuseumVisit />} />
+          </Route>
+
+          {/* Individual Detail Pages */}
+          <Route path="/museum/:id/gallery/:galleryId" element={<GalleryDetail />} />
+          <Route path="/museum/:id/artifact/:artifactId" element={<ArtifactDetail />} />
+          <Route path="/museum/:id/event/:eventId" element={<EventDetail />} />
+
           <Route path="/museum/:id/book" element={<BookTickets />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/confirmation" element={<Confirmation />} />
