@@ -21,7 +21,24 @@ export default function Home() {
     const [museums, setMuseums] = useState([]);
 
     useEffect(() => {
-        fetch('/api/museums').then(r => r.json()).then(setMuseums).catch(console.error);
+        const runId = 'museum-visibility';
+        // #region agent log
+        fetch('http://127.0.0.1:7671/ingest/783128e5-0b5c-4bc5-a7d7-15d9bdb44212',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c41a43'},body:JSON.stringify({sessionId:'c41a43',runId,hypothesisId:'H1-H2',location:'src/pages/visitor/Home.jsx:25',message:'Home museums fetch started',data:{url:'/api/museums'},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        fetch('/api/museums')
+            .then(async (r) => {
+                const data = await r.json();
+                // #region agent log
+                fetch('http://127.0.0.1:7671/ingest/783128e5-0b5c-4bc5-a7d7-15d9bdb44212',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c41a43'},body:JSON.stringify({sessionId:'c41a43',runId,hypothesisId:'H2-H3',location:'src/pages/visitor/Home.jsx:31',message:'Home museums fetch resolved',data:{status:r.status,ok:r.ok,count:Array.isArray(data)?data.length:-1},timestamp:Date.now()})}).catch(()=>{});
+                // #endregion
+                setMuseums(Array.isArray(data) ? data : []);
+            })
+            .catch((error) => {
+                // #region agent log
+                fetch('http://127.0.0.1:7671/ingest/783128e5-0b5c-4bc5-a7d7-15d9bdb44212',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c41a43'},body:JSON.stringify({sessionId:'c41a43',runId,hypothesisId:'H1-H4',location:'src/pages/visitor/Home.jsx:37',message:'Home museums fetch failed',data:{errorName:error?.name,errorMessage:error?.message},timestamp:Date.now()})}).catch(()=>{});
+                // #endregion
+                console.error(error);
+            });
     }, []);
 
     const featuredMuseums = museums.slice(0, 6);
@@ -149,20 +166,28 @@ export default function Home() {
                             <Link
                                 key={museum.id}
                                 to={`/museum/${museum.id}`}
-                                className="glass-card p-6 hover:bg-white/15 hover:-translate-y-1 transition-all duration-500 group cursor-pointer"
+                                className="relative glass-card p-6 hover:bg-white/15 hover:-translate-y-1 transition-all duration-500 group cursor-pointer overflow-hidden"
                             >
-                                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-500">
-                                    {museum.emoji}
-                                </div>
-                                <h3 className="text-lg font-heading font-bold text-soft-white mb-1">{museum.shortName}</h3>
-                                <p className="text-gold text-xs font-medium mb-2">{museum.tagline}</p>
-                                <p className="text-sm text-lgray leading-relaxed mb-3 line-clamp-2">{museum.description}</p>
-                                <div className="flex items-center gap-2 text-gold text-sm font-medium">
-                                    <FaStar className="text-xs" />
-                                    <span>{museum.rating}</span>
-                                    <span className="text-lgray-dark">•</span>
-                                    <span className="text-lgray-dark text-xs">{museum.totalVisitors} visitors</span>
-                                    <FaArrowRight className="ml-auto group-hover:translate-x-1 transition-transform" />
+                                {museum.image && (
+                                    <>
+                                        <img src={museum.image} alt={museum.shortName} className="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 transition-opacity duration-500" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent"></div>
+                                    </>
+                                )}
+                                <div className="relative z-10">
+                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-500">
+                                        {museum.emoji}
+                                    </div>
+                                    <h3 className="text-lg font-heading font-bold text-soft-white mb-1">{museum.shortName}</h3>
+                                    <p className="text-gold text-xs font-medium mb-2">{museum.tagline}</p>
+                                    <p className="text-sm text-lgray leading-relaxed mb-3 line-clamp-2">{museum.description}</p>
+                                    <div className="flex items-center gap-2 text-gold text-sm font-medium">
+                                        <FaStar className="text-xs" />
+                                        <span>{museum.rating}</span>
+                                        <span className="text-lgray-dark">•</span>
+                                        <span className="text-lgray-dark text-xs">{museum.totalVisitors} visitors</span>
+                                        <FaArrowRight className="ml-auto group-hover:translate-x-1 transition-transform" />
+                                    </div>
                                 </div>
                             </Link>
                         ))}

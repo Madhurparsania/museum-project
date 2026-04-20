@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { FaClock, FaMapMarkerAlt, FaPhone, FaEnvelope, FaGlobe, FaInfoCircle, FaLandmark, FaCalendarAlt, FaArrowRight, FaStar, FaTicketAlt } from 'react-icons/fa';
+import { FaClock, FaMapMarkerAlt, FaPhone, FaEnvelope, FaGlobe, FaInfoCircle, FaLandmark, FaCalendarAlt, FaArrowRight, FaStar, FaTicketAlt, FaGem } from 'react-icons/fa';
 
 const tabs = [
     { id: 'about', label: 'About', icon: FaInfoCircle },
     { id: 'galleries', label: 'Galleries', icon: FaLandmark },
+    { id: 'artifacts', label: 'Artifacts', icon: FaGem },
     { id: 'events', label: 'Events', icon: FaCalendarAlt },
     { id: 'visit', label: 'Plan Visit', icon: FaClock },
 ];
@@ -28,8 +29,14 @@ export default function MuseumInfo() {
     return (
         <div className="min-h-screen bg-soft-white pt-20">
             {/* Hero */}
-            <section className="bg-gradient-hero py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section className="relative bg-gradient-hero py-16 overflow-hidden">
+                {museum.image && (
+                    <div className="absolute inset-0">
+                        <img src={museum.image} alt={museum.name} className="w-full h-full object-cover opacity-20" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/90 to-navy/70"></div>
+                    </div>
+                )}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <Link to="/museums" className="text-lgray-dark hover:text-gold text-sm mb-4 inline-block transition-colors">← Back to Museums</Link>
                     <div className="flex items-start gap-6">
                         <div className="text-7xl">{museum.emoji}</div>
@@ -71,6 +78,7 @@ export default function MuseumInfo() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 {activeTab === 'about' && <AboutSection museum={museum} />}
                 {activeTab === 'galleries' && <GalleriesSection museum={museum} />}
+                {activeTab === 'artifacts' && <ArtifactsSection museum={museum} />}
                 {activeTab === 'events' && <EventsSection museum={museum} />}
                 {activeTab === 'visit' && <VisitSection museum={museum} />}
             </div>
@@ -116,6 +124,46 @@ function GalleriesSection({ museum }) {
                         <h3 className="font-heading font-bold text-navy mb-2">{g.name}</h3>
                         <p className="text-sm text-lgray-dark leading-relaxed mb-2">{g.description}</p>
                         {g.items > 0 && <span className="text-gold text-sm font-medium">{g.items.toLocaleString()} exhibits</span>}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function ArtifactsSection({ museum }) {
+    if (!museum.artifacts || museum.artifacts.length === 0) {
+        return (
+            <div className="text-center py-12">
+                <p className="text-lgray-dark text-lg">No artifacts information available for this museum yet.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <h2 className="text-2xl font-heading font-bold text-navy mb-2">Museum Artifacts</h2>
+            <p className="text-lgray-dark mb-8">Explore the remarkable collection of artifacts housed in this museum</p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {museum.artifacts.map((artifact) => (
+                    <div key={artifact.id} className="bg-white rounded-2xl border border-lgray/50 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group">
+                        {artifact.image && (
+                            <div className="h-48 overflow-hidden">
+                                <img
+                                    src={artifact.image}
+                                    alt={artifact.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                />
+                            </div>
+                        )}
+                        <div className="p-5">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="inline-block bg-navy/10 text-navy text-xs font-bold px-2.5 py-1 rounded-full">{artifact.era}</span>
+                            </div>
+                            <h3 className="font-heading font-bold text-navy mb-2 text-lg">{artifact.name}</h3>
+                            <p className="text-sm text-lgray-dark leading-relaxed">{artifact.details}</p>
+                        </div>
                     </div>
                 ))}
             </div>

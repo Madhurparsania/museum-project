@@ -5,6 +5,7 @@ module.exports = [
     shortName: 'Visvesvaraya Museum',
     tagline: 'Where Science Comes Alive',
     emoji: '🔬',
+    image: 'https://images.unsplash.com/photo-1564399580075-5dfe19c205f5?w=800&q=80',
     description: 'One of the most popular science museums in India, named after Sir M. Visvesvaraya. It features interactive exhibits on engines, space, electricity, and biotechnology, making science fun and accessible for all ages.',
     history: 'Established in 1962, this museum is a constituent unit of the National Council of Science Museums (NCSM). Named after the legendary engineer and Bharat Ratna awardee Sir M. Visvesvaraya, it has inspired millions of young minds through interactive science exhibits.',
     galleries: [
@@ -13,6 +14,13 @@ module.exports = [
       { id: 3, name: 'Electrotechnic Gallery', description: 'Fascinating demonstrations of electricity, magnetism, and electronics.', image: '⚡', items: 180 },
       { id: 4, name: 'Biotechnology Gallery', description: 'DNA models, genetic engineering exhibits, and biotech innovations.', image: '🧬', items: 120 },
       { id: 5, name: 'Fun Science', description: 'Hands-on interactive exhibits that make physics and chemistry exciting for kids.', image: '🎯', items: 250 },
+    ],
+    artifacts: [
+      { id: 1, name: 'Wright Brothers Flyer Replica', era: 'Early 20th Century', details: 'A detailed scale replica of the 1903 Wright Flyer, the first successful powered aircraft. This exhibit demonstrates the principles of aerodynamics and powered flight that revolutionized transportation.', image: 'https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=600&q=80' },
+      { id: 2, name: 'ISRO PSLV Rocket Model', era: 'Modern Era', details: "A scale model of ISRO's Polar Satellite Launch Vehicle (PSLV), showcasing India's space achievements. The exhibit includes details of the multi-stage rocket design and its successful satellite launches.", image: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=600&q=80' },
+      { id: 3, name: 'Tesla Coil Demonstrator', era: 'Late 19th Century Design', details: 'A working Tesla coil that produces spectacular electrical arcs during live demonstrations. Visitors learn about electromagnetic induction, resonance, and high-voltage phenomena invented by Nikola Tesla.', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Teslova_c%C3%ADvka_v_provozu.JPG/960px-Teslova_c%C3%ADvka_v_provozu.JPG' },
+      { id: 4, name: 'DNA Double Helix Model', era: 'Contemporary', details: 'A large-scale rotating model of the DNA double helix structure, illustrating the building blocks of life. The exhibit explains genetic coding, protein synthesis, and modern biotechnology applications.', image: 'https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=600&q=80' },
+      { id: 5, name: 'Vintage Steam Locomotive', era: '1920s', details: 'An original narrow-gauge steam locomotive from the British colonial era in India. This beautifully preserved engine showcases the engineering marvels of steam power that drove the industrial revolution.', image: '/images/artifacts/vintage_steam_locomotive.png' },
     ],
     events: [
       { id: 1, title: 'Science Demo Show', date: 'Every Saturday', time: '11:00 AM & 3:00 PM', description: 'Live science demonstrations and experiments for all ages.', price: 'Included with entry' },
@@ -45,6 +53,7 @@ module.exports = [
     shortName: 'HAL Aerospace Museum',
     tagline: "India's Aviation Legacy",
     emoji: '✈️',
+    image: 'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=800&q=80',
     description: "The HAL Heritage Centre and Aerospace Museum showcases India's aviation history with real aircraft, engines, flight simulators, and the story of Hindustan Aeronautics Limited (HAL).",
     history: "Inaugurated in 2001 by HAL, this museum chronicles India's aerospace journey from the early 1940s. It features decommissioned aircraft, helicopters, and engines that served the Indian Air Force and civilian aviation.",
     galleries: [
@@ -52,6 +61,13 @@ module.exports = [
       { id: 2, name: 'Engine Gallery', description: 'Aircraft engines from piston to turbofan, showcasing engineering evolution.', image: '⚙️', items: 25 },
       { id: 3, name: 'HAL Heritage Hall', description: 'Story of HAL from 1940s to present, including LCA Tejas development.', image: '🏭', items: 200 },
       { id: 4, name: 'Flight Simulator Zone', description: 'Experience flying in realistic flight simulators.', image: '🎮', items: 4 },
+    ],
+    artifacts: [
+      { id: 1, name: 'HAL HF-24 Marut Fighter', era: '1960s', details: "India's first indigenous jet fighter, designed by Kurt Tank and manufactured by HAL. The Marut served in the 1971 Indo-Pakistani War and represents a milestone in India's aerospace self-reliance journey.", image: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/HAL_HF-24_Marut_fighter_bomber_at_HAL_museum%2C_Bengaluru_%28Ank_Kumar%29_02.jpg' },
+      { id: 2, name: 'MiG-21 Airframe Display', era: 'Cold War period', details: 'A preserved aircraft representing one of the longest-serving supersonic fighters in India. The MiG-21 has been the backbone of the Indian Air Force for decades and played crucial roles in multiple conflicts.', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Croatian_MiG-21_%28cropped%29.jpg/960px-Croatian_MiG-21_%28cropped%29.jpg' },
+      { id: 3, name: 'Kiran Jet Trainer', era: '1970s-2000s', details: 'Used extensively for pilot training by the Indian Air Force and naval aviation teams. The HAL HJT-16 Kiran was designed and built indigenously and trained thousands of IAF pilots over three decades.', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/U2484_HAL_HJT-16_Kiran_Indian_Air_Force_%28_Surya_Kiran_Aerobatic_Team_%29_%288414605364%29.jpg/960px-U2484_HAL_HJT-16_Kiran_Indian_Air_Force_%28_Surya_Kiran_Aerobatic_Team_%29_%288414605364%29.jpg' },
+      { id: 4, name: 'Orpheus Turbojet Engine', era: 'Mid 20th century', details: 'Classic turbojet engine display showing core propulsion technology used in military aircraft. The Bristol Orpheus engine powered the HF-24 Marut and visitors can see its internal components up close.', image: 'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?w=600&q=80' },
+      { id: 5, name: 'LCA Tejas Development Exhibit', era: 'Modern era', details: "Scaled models and development documentation tracing India's indigenous light combat aircraft program. The exhibit showcases the journey from concept to operational deployment of India's pride in aerospace.", image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Tejas_MKII.jpg/330px-Tejas_MKII.jpg' },
     ],
     events: [
       { id: 1, title: 'Model Aircraft Workshop', date: 'Last Saturday of month', time: '10:00 AM - 12:30 PM', description: 'Build and fly model aircraft under expert guidance.', price: '₹300' },
@@ -83,11 +99,19 @@ module.exports = [
     shortName: 'Science Gallery',
     tagline: 'Science Culture Experiment',
     emoji: '🧪',
+    image: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80',
     description: 'A unique public institution operating at the intersection of human, natural, and social sciences, engineering, and the arts. Established with the founding support of the Government of Karnataka, it hosts trans-disciplinary exhibitions, workshops, and public events.',
     history: "Envisioned as Asia's first Science Gallery, it officially opened to the public in January 2024. It is part of the Global Science Gallery Network and aims to engage young adults and foster critical appreciation for science through open-ended experiments.",
     galleries: [
       { id: 1, name: 'Exhibition Galleries', description: "Ever-changing, thematic exhibitions exploring humanity's relationship with the environment, culture, and science.", image: '🖼️', items: 20 },
       { id: 2, name: 'Public Lab Complex', description: 'Experimental spaces for intergenerational co-inquiry and workshops.', image: '🧬', items: 5 },
+    ],
+    artifacts: [
+      { id: 1, name: 'Carbon Footprint Mapping Wall', era: 'Contemporary', details: 'Interactive installation visualizing urban climate impact and personal sustainability choices. Visitors can input their daily habits and see real-time calculations of their carbon footprint projected onto a large-scale wall display.', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&q=80' },
+      { id: 2, name: 'Living Biodesign Samples', era: 'Contemporary', details: 'Bio-material prototypes made from algae, fungi, and agricultural waste in design-science collaborations. These living exhibits demonstrate how biology can replace petroleum-based materials in everyday products.', image: 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=600&q=80' },
+      { id: 3, name: 'Citizen Science Data Console', era: 'Contemporary', details: 'Hands-on station where visitors explore Bangalore city datasets from air quality and water monitoring. The interactive console lets users visualize environmental data and contribute to citizen science projects.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80' },
+      { id: 4, name: 'AI and Ethics Exhibit Pods', era: 'Contemporary', details: 'Immersive pods presenting real-world AI bias, surveillance, and governance case studies. Visitors experience firsthand how algorithmic decisions impact communities and explore ethical frameworks for AI development.', image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80' },
+      { id: 5, name: 'Public Lab Experiment Bench', era: 'Contemporary', details: 'Open bench setup used in guided experiment sessions with facilitators and student groups. This hands-on lab space enables visitors to conduct real scientific experiments under expert guidance.', image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&q=80' },
     ],
     events: [
       { id: 1, title: 'Trans-disciplinary Workshops', date: 'Varies', time: 'Varies', description: 'Interactive sessions blending art and science led by expert Mediators.', price: 'Free' },

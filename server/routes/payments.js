@@ -1,15 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const Razorpay = require('razorpay');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const Payment = require('../models/Payment');
 const Booking = require('../models/Booking');
 
 // Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+const razorpayConfigured = Boolean(razorpayKeyId && razorpayKeySecret);
+
+const razorpay = razorpayConfigured
+  ? new Razorpay({
+      key_id: razorpayKeyId,
+      key_secret: razorpayKeySecret,
+    })
+  : null;
 
 // GET /api/payments — all payments
 router.get('/', async (req, res) => {
@@ -28,6 +34,10 @@ router.get('/', async (req, res) => {
 // POST /api/payments/create-order — create Razorpay order
 router.post('/create-order', async (req, res) => {
   try {
+    if (!razorpayConfigured || !razorpay) {
+      return res.status(503).json({ error: 'Payment gateway is not configured' });
+    }
+
     const { amount, currency = 'INR', receipt } = req.body;
 
     if (!amount) {
@@ -51,6 +61,10 @@ router.post('/create-order', async (req, res) => {
 // POST /api/payments/verify — verify Razorpay signature
 router.post('/verify', async (req, res) => {
   try {
+    if (!razorpayConfigured || !razorpay) {
+      return res.status(503).json({ error: 'Payment gateway is not configured' });
+    }
+
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -61,7 +75,7 @@ router.post('/verify', async (req, res) => {
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .createHmac("sha256", razorpayKeySecret)
       .update(sign.toString())
       .digest("hex");
 

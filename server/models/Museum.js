@@ -6,6 +6,7 @@ const museumSchema = new mongoose.Schema({
   shortName: String,
   tagline: String,
   emoji: String,
+  image: String,
   description: String,
   history: String,
   galleries: [{
@@ -14,6 +15,13 @@ const museumSchema = new mongoose.Schema({
     description: String,
     image: String,
     items: Number
+  }],
+  artifacts: [{
+    id: Number,
+    name: String,
+    era: String,
+    details: String,
+    image: String
   }],
   events: [{
     id: Number,

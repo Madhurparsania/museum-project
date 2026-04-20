@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaStar, FaArrowRight, FaMapMarkerAlt, FaClock, FaSearch } from 'react-icons/fa';
+import { FaStar, FaArrowRight, FaMapMarkerAlt, FaSearch } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 
 export default function Museums() {
@@ -7,7 +7,24 @@ export default function Museums() {
     const [museums, setMuseums] = useState([]);
 
     useEffect(() => {
-        fetch('/api/museums').then(r => r.json()).then(setMuseums).catch(console.error);
+        const runId = 'museum-visibility';
+        // #region agent log
+        fetch('http://127.0.0.1:7671/ingest/783128e5-0b5c-4bc5-a7d7-15d9bdb44212',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c41a43'},body:JSON.stringify({sessionId:'c41a43',runId,hypothesisId:'H1-H2',location:'src/pages/visitor/Museums.jsx:12',message:'Museums page fetch started',data:{url:'/api/museums'},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        fetch('/api/museums')
+            .then(async (r) => {
+                const data = await r.json();
+                // #region agent log
+                fetch('http://127.0.0.1:7671/ingest/783128e5-0b5c-4bc5-a7d7-15d9bdb44212',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c41a43'},body:JSON.stringify({sessionId:'c41a43',runId,hypothesisId:'H2-H3',location:'src/pages/visitor/Museums.jsx:18',message:'Museums page fetch resolved',data:{status:r.status,ok:r.ok,count:Array.isArray(data)?data.length:-1},timestamp:Date.now()})}).catch(()=>{});
+                // #endregion
+                setMuseums(Array.isArray(data) ? data : []);
+            })
+            .catch((error) => {
+                // #region agent log
+                fetch('http://127.0.0.1:7671/ingest/783128e5-0b5c-4bc5-a7d7-15d9bdb44212',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'c41a43'},body:JSON.stringify({sessionId:'c41a43',runId,hypothesisId:'H1-H4',location:'src/pages/visitor/Museums.jsx:24',message:'Museums page fetch failed',data:{errorName:error?.name,errorMessage:error?.message},timestamp:Date.now()})}).catch(()=>{});
+                // #endregion
+                console.error(error);
+            });
     }, []);
 
     const filtered = museums.filter(m =>
@@ -53,15 +70,23 @@ export default function Museums() {
                                 className="group bg-white rounded-2xl border border-lgray/50 overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
                             >
                                 {/* Card Header */}
-                                <div className="bg-gradient-to-br from-navy to-royal p-6 relative overflow-hidden">
+                                <div className="relative bg-gradient-to-br from-navy to-royal p-6 overflow-hidden h-48">
+                                    {museum.image && (
+                                        <>
+                                            <img src={museum.image} alt={museum.shortName} className="absolute inset-0 w-full h-full object-cover opacity-30" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/70 to-transparent"></div>
+                                        </>
+                                    )}
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                                    <div className="text-6xl mb-3 group-hover:scale-110 transition-transform duration-500">
-                                        {museum.emoji}
+                                    <div className="relative z-10 flex flex-col justify-end h-full">
+                                        <div className="text-5xl mb-2 group-hover:scale-110 transition-transform duration-500">
+                                            {museum.emoji}
+                                        </div>
+                                        <h3 className="text-xl font-heading font-bold text-soft-white mb-1 leading-tight">
+                                            {museum.shortName}
+                                        </h3>
+                                        <p className="text-gold text-sm font-medium">{museum.tagline}</p>
                                     </div>
-                                    <h3 className="text-xl font-heading font-bold text-soft-white mb-1 leading-tight">
-                                        {museum.shortName}
-                                    </h3>
-                                    <p className="text-gold text-sm font-medium">{museum.tagline}</p>
                                 </div>
 
                                 {/* Card Body */}
